@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07060f">
+<title>GameBox — скачать мои игры</title>
+<meta name="description" content="Мои игры: скачать для Android (APK), установить на iPhone и iPad как приложение или играть прямо в браузере. Бесплатно, без рекламы, работает офлайн.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GameBox — скачать мои игры">
+<meta property="og:description" content="Аркада «Убеги от учителя»: Android APK, iPhone (PWA) и браузер. Бесплатно и без рекламы.">
+<meta property="og:image" content="assets/screens/gameplay.png">
+<link rel="icon" type="image/png" href="assets/icons/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-180.png">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="#top">
+      <span class="logo-mark">🎮</span>
+      <b>GameBox</b>
+    </a>
+    <nav class="nav">
+      <a href="#games">Игры</a>
+      <a href="#install">Установка</a>
+      <a href="#screens">Скриншоты</a>
+      <a href="#faq">Вопросы</a>
+    </nav>
+    <a class="btn primary small" href="downloads/escape-teacher.apk" download>
+      <span class="ico">⬇</span> Скачать
+    </a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="dot"></span> Новая игра уже доступна</span>
+        <h1>Мои игры —<br><span class="grad">в одном месте</span></h1>
+        <p class="lead">
+          Аркада «Убеги от учителя»: убегай от учителей, собирай монеты, прокачивайся
+          в магазине и сражайся с боссами. Ставится на Android и iPhone, запускается
+          в браузере и работает без интернета.
+        </p>
+        <div class="hero-actions">
+          <a class="btn android" href="downloads/escape-teacher.apk" download>
+            <span class="ico">🤖</span> Скачать для Android
+          </a>
+          <a class="btn ghost" href="game/">
+            <span class="ico">▶</span> Играть в браузере
+          </a>
+        </div>
+        <div class="chips">
+          <span class="chip">🤖 <b>Android</b> · APK</span>
+          <span class="chip">🍎 <b>iPhone / iPad</b> · веб-приложение</span>
+          <span class="chip">💻 <b>Windows · macOS · Linux</b></span>
+          <span class="chip">🌐 <b>Браузер</b> · без установки</span>
+        </div>
+      </div>
+
+      <div class="hero-shot">
+        <div class="frame">
+          <div class="frame-bar"><i></i><i></i><i></i><span>gamebox / убеги-от-учителя</span></div>
+          <picture>
+            <source srcset="assets/screens/gameplay.webp" type="image/webp">
+            <img src="assets/screens/gameplay.png" alt="Скриншот игры «Убеги от учителя»" width="1000" height="688">
+          </picture>
+        </div>
+        <div class="shot-badge">🎮 1 игра · 0 ₽ · без рекламы и трекеров</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GAMES ================= -->
+  <section id="games">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-kicker">Каталог</div>
+        <h2>Игры</h2>
+        <p>Всё, что можно скачать и во что можно играть прямо сейчас. Список будет пополняться.</p>
+      </div>
+
+      <div class="games-grid" id="gamesGrid"></div>
+
+      <noscript>
+        <p style="margin-top:18px;color:#a99fd0">
+          Для карточек игр нужен JavaScript. Прямые ссылки:
+          <a href="game/" style="color:#cdb9ff">играть в браузере</a> ·
+          <a href="downloads/escape-teacher.apk" download style="color:#cdb9ff">скачать APK</a>.
+        </p>
+      </noscript>
+    </div>
+  </section>
+
+  <!-- ================= INSTALL ================= -->
+  <section id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-kicker">Установка</div>
+        <h2>Как поставить игру на устройство</h2>
+        <p>Выбери свою платформу — шаги занимают меньше минуты.</p>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="android" role="tab">🤖 Android</button>
+        <button class="tab" data-tab="ios" role="tab">🍎 iPhone / iPad</button>
+        <button class="tab" data-tab="pc" role="tab">💻 Компьютер</button>
+      </div>
+
+      <div class="panel active" data-panel="android">
+        <div class="panel-card">
+          <div class="steps">
+            <div class="step"><p>Нажми <b>«Скачать APK»</b> — файл <b>escape-teacher.apk</b> (128 КБ) сохранится на телефон.</p></div>
+            <div class="step"><p>Открой файл в уведомлениях или в «Загрузках».</p></div>
+            <div class="step"><p>Если появится предупреждение — разреши <b>установку из этого источника</b> (Настройки → Безопасность).</p></div>
+            <div class="step"><p>Готово: на рабочем столе появится иконка 🎩, игра запускается на весь экран и без интернета.</p></div>
+          </div>
+          <div class="note">🔒 Приложение не просит интернет, доступ к файлам или контактам. Прогресс хранится только на телефоне.</div>
+          <div class="panel-actions">
+            <a class="btn android" href="downloads/escape-teacher.apk" download><span class="ico">⬇</span> Скачать APK</a>
+            <a class="btn ghost" href="game/"><span class="ico">▶</span> Открыть в браузере</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="ios">
+        <div class="panel-card">
+          <div class="steps">
+            <div class="step"><p>Открой игру в <b>Safari</b> на iPhone или iPad (кнопка ниже).</p></div>
+            <div class="step"><p>Нажми кнопку <b>«Поделиться»</b> — квадрат со стрелкой вверх.</p></div>
+            <div class="step"><p>Выбери <b>«На экран «Домой»»</b>.</p></div>
+            <div class="step"><p>Нажми <b>«Добавить»</b> — на экране появится иконка, игра запустится на весь экран как обычное приложение.</p></div>
+          </div>
+          <div class="note blue">ℹ️ В App Store приложение попадает только со сборкой на Mac и сертификатом Apple, поэтому на iPhone ставим веб-приложение (PWA). Отличий в игре нет: свой значок, полный экран, сохранение прогресса и работа офлайн.</div>
+          <div class="panel-actions">
+            <a class="btn ios" href="game/"><span class="ico">📱</span> Открыть игру на iPhone</a>
+            <a class="btn ghost" href="#screens">Посмотреть скриншоты</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="pc">
+        <div class="panel-card">
+          <div class="steps">
+            <div class="step"><p>Открой игру в любом браузере — <b>без установки</b> и без регистрации.</p></div>
+            <div class="step"><p>Управление: <b>WASD</b> или стрелки, <b>Shift</b> — рывок, <b>Пробел</b> — стрелять, <b>R</b> — перезарядка, <b>Esc</b> — магазин.</p></div>
+            <div class="step"><p>Можно скачать HTML-файл и играть офлайн двойным щелчком по нему.</p></div>
+          </div>
+          <div class="note">🖥️ Игра идёт в любом современном браузере: Chrome, Edge, Firefox, Safari.</div>
+          <div class="panel-actions">
+            <a class="btn primary" href="game/"><span class="ico">▶</span> Играть</a>
+            <a class="btn ghost" href="downloads/escape-teacher.html" download><span class="ico">⬇</span> Скачать HTML</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCREENS ================= -->
+  <section id="screens">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-kicker">Скриншоты</div>
+        <h2>Как это выглядит</h2>
+        <p>Нажми на картинку, чтобы открыть крупнее.</p>
+      </div>
+      <div class="shots">
+        <figure class="shot" data-full="assets/screens/gameplay.webp"><picture><source srcset="assets/screens/gameplay.webp" type="image/webp"><img src="assets/screens/gameplay.png" alt="Геймплей: погоня на школьном дворе" width="1000" height="688" loading="lazy"></picture></figure>
+        <figure class="shot" data-full="assets/screens/boss.webp"><picture><source srcset="assets/screens/boss.webp" type="image/webp"><img src="assets/screens/boss.png" alt="Бой с боссом Директором" width="1000" height="688" loading="lazy"></picture></figure>
+        <figure class="shot" data-full="assets/screens/menu.webp"><picture><source srcset="assets/screens/menu.webp" type="image/webp"><img src="assets/screens/menu.png" alt="Меню выбора учителя" width="1000" height="688" loading="lazy"></picture></figure>
+        <figure class="shot" data-full="assets/screens/shop.webp"><picture><source srcset="assets/screens/shop.webp" type="image/webp"><img src="assets/screens/shop.png" alt="Магазин апгрейдов" width="1000" height="688" loading="lazy"></picture></figure>
+        <figure class="shot" data-full="assets/screens/maps.webp"><picture><source srcset="assets/screens/maps.webp" type="image/webp"><img src="assets/screens/maps.png" alt="Выбор карты" width="1000" height="688" loading="lazy"></picture></figure>
+        <figure class="shot" data-full="assets/screens/win.webp"><picture><source srcset="assets/screens/win.webp" type="image/webp"><img src="assets/screens/win.png" alt="Экран победы" width="1000" height="688" loading="lazy"></picture></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-kicker">Вопросы</div>
+        <h2>Коротко о главном</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>Игры правда бесплатные?</summary>
+          <p>Да. Ни оплаты, ни рекламы, ни встроенных покупок — качай и играй.</p>
+        </details>
+        <details>
+          <summary>Почему на iPhone нет файла .ipa?</summary>
+          <p>Apple разрешает устанавливать приложения только из App Store или собранные с сертификатом разработчика на Mac. Поэтому на iPhone игра ставится как веб-приложение: Safari → «Поделиться» → «На экран «Домой»». Выглядит и работает как обычное приложение, включая офлайн.</p>
+        </details>
+        <details>
+          <summary>Работает без интернета?</summary>
+          <p>Да. Android-версия — офлайн целиком. Веб-версия кешируется после первого запуска и дальше открывается без сети.</p>
+        </details>
+        <details>
+          <summary>Где хранится прогресс?</summary>
+          <p>В памяти браузера или приложения на твоём устройстве. Никуда не отправляется, на сервере ничего нет.</p>
+        </details>
+        <details>
+          <summary>Скоро будут другие игры?</summary>
+          <p>Да, каталог будет пополняться — сайт сделан так, чтобы новую игру добавлять в один список без переделки вёрстки.</p>
+        </details>
+        <details>
+          <summary>Какие устройства поддерживаются?</summary>
+          <p>Android 5.0 и новее (APK), iPhone и iPad с iOS 12+ (веб-приложение), а также любой компьютер с современным браузером.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>© 2026 GameBox · игры на HTML5 · без рекламы и трекинга</div>
+    <div><a href="game/">Играть</a> · <a href="#games">Все игры</a> · <a href="#top">Наверх ↑</a></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="Скриншот игры"></div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
