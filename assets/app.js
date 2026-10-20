@@ -5,21 +5,6 @@
 
 const GAMES = [
   {
-    id: 'learn-and-play',
-    title: 'Учись и играй',
-    genre: 'Обучение · викторины',
-    desc: 'Школьные предметы в игровой форме: конспекты, викторины, кроссворды и задания по истории, литературе и математике. Роли: ученик, староста, учитель, создатель.',
-    cover: 'assets/screens/learn-play.png',
-    coverWebp: 'assets/screens/learn-play.webp',
-    tags: ['Обучение', 'Викторины', 'Роли', 'Офлайн'],
-    version: '1.0',
-    size: '295 КБ',
-    play: 'game/learn-and-play/',
-    android: 'downloads/learn-and-play.apk',
-    ios: 'game/learn-and-play/',
-    isNew: true
-  },
-  {
     id: 'escape-teacher',
     title: 'Убеги от учителя',
     genre: 'Аркада · раннер',
@@ -28,11 +13,26 @@ const GAMES = [
     coverWebp: 'assets/screens/gameplay.webp',
     tags: ['Аркада', 'Боссы', 'Магазин', 'Офлайн'],
     version: '1.0',
-    size: '128 КБ',
+    size: '129 КБ',
     play: 'game/',
     android: 'downloads/escape-teacher.apk',
     ios: 'game/',
     isNew: false
+  },
+  {
+    id: 'learn-and-play',
+    title: 'Учись и играй',
+    genre: 'Обучение · викторины',
+    desc: 'Школьные предметы в игровой форме: конспекты, викторины, кроссворды и задания по истории, литературе и математике. Роли: ученик, староста, учитель, создатель.',
+    cover: 'assets/screens/learn-play.png',
+    coverWebp: 'assets/screens/learn-play.webp',
+    tags: ['Обучение', 'Викторины', 'Роли', 'Офлайн'],
+    version: '1.0',
+    size: '345 КБ',
+    play: 'game/learn-and-play/',
+    android: 'downloads/learn-and-play.apk',
+    ios: 'game/learn-and-play/',
+    isNew: true
   }
 ];
 
