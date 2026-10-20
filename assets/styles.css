@@ -517,7 +517,6 @@ details p { color: var(--muted); font-size: 14.4px; margin-top: 10px; }
   .hero-actions .btn { flex: 1 1 100%; }
   .games-grid { grid-template-columns: 1fr; }
   .panel-card { padding: 18px; }
-  .shot-badge { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
