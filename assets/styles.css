@@ -168,13 +168,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn .ico { font-size: 17px; line-height: 1; }
 
 /* ---------------- hero ---------------- */
-.hero { padding: 76px 0 40px; }
+.hero { padding: 80px 0 46px; }
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.05fr .95fr;
-  gap: 46px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 0;
+  justify-items: center;
+  text-align: center;
 }
+.hero-copy { max-width: 760px; }
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -205,10 +207,10 @@ h1 .grad {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.lead { color: var(--muted); font-size: clamp(15px, 1.6vw, 18px); max-width: 52ch; margin-bottom: 26px; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+.lead { color: var(--muted); font-size: clamp(15px, 1.6vw, 18px); max-width: 56ch; margin: 0 auto 26px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; justify-content: center; }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .chip {
   display: inline-flex;
   align-items: center;
@@ -221,54 +223,6 @@ h1 .grad {
   color: var(--muted);
 }
 .chip b { color: var(--txt); font-weight: 600; }
-
-/* картинка в «окне браузера» */
-.hero-shot { position: relative; }
-.frame {
-  position: relative;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, .14);
-  background: #0a0817;
-  box-shadow: var(--shadow), 0 0 0 1px rgba(139, 92, 255, .18), 0 0 90px rgba(139, 92, 255, .28);
-  overflow: hidden;
-  transform: perspective(1400px) rotateY(-7deg) rotateX(3deg);
-  transition: transform .5s cubic-bezier(.2, .8, .2, 1);
-}
-.frame:hover { transform: perspective(1400px) rotateY(0deg) rotateX(0deg) translateY(-4px); }
-.frame-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, .04);
-  border-bottom: 1px solid var(--line);
-}
-.frame-bar i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; display: block; }
-.frame-bar i:nth-child(2) { background: #febc2e; }
-.frame-bar i:nth-child(3) { background: #28c840; }
-.frame-bar span {
-  margin-left: 10px;
-  font-size: 11.5px;
-  color: var(--muted);
-  background: rgba(0, 0, 0, .35);
-  padding: 3px 10px;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-}
-.frame img { width: 100%; height: auto; display: block; }
-
-.shot-badge {
-  position: absolute;
-  bottom: -16px;
-  left: 18px;
-  padding: 8px 14px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(35, 24, 70, .95), rgba(14, 10, 34, .95));
-  border: 1px solid var(--line-hi);
-  font-size: 12.5px;
-  color: #d9caff;
-  box-shadow: var(--shadow);
-}
 
 /* ---------------- секции ---------------- */
 section { padding: 62px 0; }
@@ -552,11 +506,8 @@ details p { color: var(--muted); font-size: 14.4px; margin-top: 10px; }
 
 /* ---------------- адаптив ---------------- */
 @media (max-width: 940px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 34px; }
-  .hero-shot { order: -1; }
-  .frame { transform: none; }
   .nav { display: none; }
-  .hero { padding-top: 44px; }
+  .hero { padding: 48px 0 30px; }
 }
 @media (max-width: 620px) {
   .wrap { padding: 0 16px; }
