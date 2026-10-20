@@ -13,14 +13,16 @@ site/
 │  ├─ app.js                   # список игр GAMES + вкладки + лайтбокс
 │  ├─ screens/                 # скриншоты (webp + png-фолбэк)
 │  └─ icons/                   # favicon и apple-touch-icon сайта
-├─ game/                       # веб-версия игры (PWA)
-│  ├─ index.html               # копия escape-teacher.html
+├─ game/                       # веб-версии игр (PWA)
+│  ├─ index.html               # «Убеги от учителя» (копия escape-teacher.html)
 │  ├─ manifest.webmanifest
 │  ├─ sw.js                    # офлайн-кеш
-│  └─ icons/                   # 192 / 512 / maskable / apple-touch
+│  ├─ icons/                   # 192 / 512 / maskable / apple-touch
+│  └─ learn-and-play/          # «Учись и играй» — та же схема: index.html, manifest, sw, icons
 └─ downloads/
-   ├─ escape-teacher.apk       # Android
-   └─ escape-teacher.html      # версия для офлайна на компьютере
+   ├─ escape-teacher.apk       # Android: «Убеги от учителя»
+   ├─ escape-teacher.html      # версия для офлайна на компьютере
+   └─ learn-and-play.apk       # Android: «Учись и играй»
 ```
 
 ## Как добавить новую игру
