@@ -44,11 +44,18 @@ const GRID = document.getElementById('gamesGrid');
 
 function cardHTML(g) {
   const vs = g.versions || null;
-  const active = vs ? vs[0] : { play: g.play, apk: g.android };
+  let idx = 0;
+  if (vs) {
+    try {
+      const saved = parseInt(localStorage.getItem('gb:ver:' + g.id), 10);
+      if (!isNaN(saved) && saved >= 0 && saved < vs.length) idx = saved;
+    } catch (e) {}
+  }
+  const active = vs ? vs[idx] : { play: g.play, apk: g.android };
 
   const switcher = vs ? `
         <div class="ver-switch" role="tablist" aria-label="Версия игры">
-          ${vs.map((v, i) => `<button class="ver${i === 0 ? ' on' : ''}" data-ver="${i}" role="tab" aria-selected="${i === 0}">${v.label}</button>`).join('')}
+          ${vs.map((v, i) => `<button class="ver${i === idx ? ' on' : ''}" data-ver="${i}" role="tab" aria-selected="${i === idx}">${v.label}</button>`).join('')}
         </div>` : '';
 
   return `
@@ -136,6 +143,7 @@ document.addEventListener('click', e => {
       const apk = card.querySelector('[data-apk]');
       if (play) play.href = v.play;
       if (apk) apk.href = v.apk;
+      try { localStorage.setItem('gb:ver:' + card.dataset.id, String(idx)); } catch (err) {}
       toast('Версия: ' + v.label, 2200);
     }
     return;
