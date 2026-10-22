@@ -19,7 +19,7 @@ const GAMES = [
     ios: 'game/',
     versions: [
       { label: 'Сверху · 3D', play: 'game/', apk: 'downloads/escape-teacher.apk' },
-      { label: '1-е лицо · 3D', play: 'game/fps/', apk: null },
+      { label: '1-е лицо · 3D', play: 'game/fps/', apk: 'downloads/escape-fps.apk' },
       { label: 'Классика · 2D', play: 'game/classic/', apk: 'downloads/escape-teacher-2d.apk' }
     ],
     isNew: false
