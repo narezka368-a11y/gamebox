@@ -296,17 +296,19 @@ function collideAny(cx, cy, cr) {
 
 /* ---------- инициализация three.js ---------- */
 function initThree() {
-  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const mobile = isMobile();
+  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !mobile, powerPreference: 'default', alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.6));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const shadowsOn = !mobile;
+  renderer.shadowMap.enabled = shadowsOn;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x141a2c);
   scene.fog = new THREE.Fog(0x141a2c, 650, 2000);
 
-  camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.08, 3000);
+  camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.3, 2200);
   camera.rotation.order = 'YXZ';
   scene.add(camera);   // без этого оружие в руках не рендерится
 
@@ -315,7 +317,7 @@ function initThree() {
 
   const dir = new THREE.DirectionalLight(0xfff3d8, 1.2);
   dir.position.set(320, 700, 220);
-  dir.castShadow = true;
+  dir.castShadow = shadowsOn;
   dir.shadow.mapSize.set(1024, 1024);
   dir.shadow.camera.left = -700;
   dir.shadow.camera.right = 700;
@@ -527,7 +529,7 @@ function buildWeapon() {
   muzzle.visible = false;
   g.add(muzzle);
 
-  g.position.set(.42, -.34, -1.15);
+  g.position.set(.42, -.34, -1.45);
   g.rotation.set(0.02, -0.09, 0.02);
   g.traverse(o => { o.castShadow = false; o.receiveShadow = false; });
   camera.add(g);
@@ -540,7 +542,7 @@ function weaponIdle(dt, moving) {
   recoil = Math.max(0, recoil - dt * 6);
   const bobX = Math.sin(swayT * 2.2) * (moving ? 0.012 : 0.004);
   const bobY = Math.cos(swayT * 4.4) * (moving ? 0.014 : 0.005);
-  weapon.position.set(.42 + bobX, -.34 + bobY - recoil * 0.02, -1.15 + recoil * 0.13);
+  weapon.position.set(.42 + bobX, -.34 + bobY - recoil * 0.02, -1.45 + recoil * 0.13);
   weapon.rotation.set(0.02 + recoil * 0.22, -0.09 + bobX * 2, 0.02);
   if (muzzle) muzzle.visible = recoil > 0.55;
 }
@@ -1372,15 +1374,48 @@ function frame() {
 }
 
 /* ---------- старт ---------- */
+function showFatal(text) {
+  let el = document.getElementById('fatal');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'fatal';
+    el.style.cssText = 'position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;' +
+      'flex-direction:column;gap:10px;padding:24px;text-align:center;background:#0b0716;color:#fff;font-family:sans-serif;font-size:14px';
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<div style="font-size:34px">😵</div>' +
+    '<div style="font-weight:bold;font-size:16px">Не удалось запустить 3D</div>' +
+    '<div style="color:#b9a8e6;max-width:520px;line-height:1.5">' + text + '</div>' +
+    '<button onclick="location.reload()" style="margin-top:8px;padding:10px 18px;border-radius:10px;border:0;' +
+    'background:#6a3fe0;color:#fff;font-size:15px">Перезапустить</button>';
+  el.style.display = 'flex';
+}
+
+function hasWebGL() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+  } catch (e) { return false; }
+}
+
 loadPrefs();
 bindPrefs();
 buildMenus();
-initThree();
-buildLevel();
-state = 'menu';
-show('menu');
-hideGameUI(true);
-frame();
+
+try {
+  if (!hasWebGL()) {
+    showFatal('Устройство не поддерживает WebGL. Попробуй другую версию игры — «сверху» или классическую 2D.');
+  } else {
+    initThree();
+    buildLevel();
+    state = 'menu';
+    show('menu');
+    hideGameUI(true);
+    frame();
+  }
+} catch (e) {
+  showFatal('Ошибка запуска: ' + (e && e.message ? e.message : e));
+}
 
 window.addEventListener('resize', () => { if (renderer) onResize(); });
 
