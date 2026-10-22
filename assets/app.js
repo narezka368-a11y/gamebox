@@ -17,6 +17,10 @@ const GAMES = [
     play: 'game/',
     android: 'downloads/escape-teacher.apk',
     ios: 'game/',
+    versions: [
+      { label: 'Новая · 3D', play: 'game/', apk: 'downloads/escape-teacher.apk' },
+      { label: 'Классика · 2D', play: 'game/classic/', apk: 'downloads/escape-teacher-2d.apk' }
+    ],
     isNew: false
   },
   {
@@ -39,8 +43,16 @@ const GAMES = [
 const GRID = document.getElementById('gamesGrid');
 
 function cardHTML(g) {
+  const vs = g.versions || null;
+  const active = vs ? vs[0] : { play: g.play, apk: g.android };
+
+  const switcher = vs ? `
+        <div class="ver-switch" role="tablist" aria-label="Версия игры">
+          ${vs.map((v, i) => `<button class="ver${i === 0 ? ' on' : ''}" data-ver="${i}" role="tab" aria-selected="${i === 0}">${v.label}</button>`).join('')}
+        </div>` : '';
+
   return `
-    <article class="game-card">
+    <article class="game-card" data-id="${g.id}">
       <div class="game-cover">
         ${g.isNew ? '<span class="game-tag new">NEW</span>' : ''}
         <picture>
@@ -59,10 +71,10 @@ function cardHTML(g) {
           <span>версия <b>${g.version}</b></span>
           <span><b>${g.size}</b></span>
           <span>Android · iOS · PC</span>
-        </div>
+        </div>${switcher}
         <div class="card-actions">
-          <a class="btn primary small" href="${g.play}"><span class="ico">▶</span> Играть</a>
-          <a class="btn android small" href="${g.android}" download><span class="ico">🤖</span> APK</a>
+          <a class="btn primary small" data-play href="${active.play}"><span class="ico">▶</span> Играть</a>
+          <a class="btn android small" data-apk href="${active.apk}" download><span class="ico">🤖</span> APK</a>
           <button class="btn ios small" data-ios="1"><span class="ico">📱</span> iPhone</button>
         </div>
       </div>
@@ -105,8 +117,30 @@ function toast(text, ms) {
   toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms || 4200);
 }
 
-/* ---------------- кнопка iPhone на карточке ---------------- */
+/* ---------------- кнопки в карточке ---------------- */
 document.addEventListener('click', e => {
+  const verBtn = e.target.closest('.ver');
+  if (verBtn) {
+    e.preventDefault();
+    const card = verBtn.closest('.game-card');
+    const game = GAMES.find(g => g.id === card.dataset.id);
+    const idx = parseInt(verBtn.dataset.ver, 10);
+    const v = game && game.versions ? game.versions[idx] : null;
+    if (v) {
+      card.querySelectorAll('.ver').forEach(b => {
+        const on = b === verBtn;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-selected', String(on));
+      });
+      const play = card.querySelector('[data-play]');
+      const apk = card.querySelector('[data-apk]');
+      if (play) play.href = v.play;
+      if (apk) apk.href = v.apk;
+      toast('Версия: ' + v.label, 2200);
+    }
+    return;
+  }
+
   const iosBtn = e.target.closest('[data-ios]');
   if (iosBtn) {
     e.preventDefault();
