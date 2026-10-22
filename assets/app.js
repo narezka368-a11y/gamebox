@@ -18,7 +18,8 @@ const GAMES = [
     android: 'downloads/escape-teacher.apk',
     ios: 'game/',
     versions: [
-      { label: 'Новая · 3D', play: 'game/', apk: 'downloads/escape-teacher.apk' },
+      { label: 'Сверху · 3D', play: 'game/', apk: 'downloads/escape-teacher.apk' },
+      { label: '1-е лицо · 3D', play: 'game/fps/', apk: null },
       { label: 'Классика · 2D', play: 'game/classic/', apk: 'downloads/escape-teacher-2d.apk' }
     ],
     isNew: false
@@ -81,7 +82,7 @@ function cardHTML(g) {
         </div>${switcher}
         <div class="card-actions">
           <a class="btn primary small" data-play href="${active.play}"><span class="ico">▶</span> Играть</a>
-          <a class="btn android small" data-apk href="${active.apk}" download><span class="ico">🤖</span> APK</a>
+          ${active.apk ? `<a class="btn android small" data-apk href="${active.apk}" download><span class="ico">🤖</span> APK</a>` : '<a class="btn android small ghost hidden" data-apk href="#" aria-hidden="true"></a>'}
           <button class="btn ios small" data-ios="1"><span class="ico">📱</span> iPhone</button>
         </div>
       </div>
@@ -142,7 +143,15 @@ document.addEventListener('click', e => {
       const play = card.querySelector('[data-play]');
       const apk = card.querySelector('[data-apk]');
       if (play) play.href = v.play;
-      if (apk) apk.href = v.apk;
+      if (apk) {
+        if (v.apk) {
+          apk.href = v.apk;
+          apk.classList.remove('hidden');
+          apk.innerHTML = '<span class="ico">🤖</span> APK';
+        } else {
+          apk.classList.add('hidden');
+        }
+      }
       try { localStorage.setItem('gb:ver:' + card.dataset.id, String(idx)); } catch (err) {}
       toast('Версия: ' + v.label, 2200);
     }
