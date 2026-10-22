@@ -296,7 +296,7 @@ function collideAny(cx, cy, cr) {
 
 /* ---------- инициализация three.js ---------- */
 function initThree() {
-  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.shadowMap.enabled = true;
@@ -306,8 +306,9 @@ function initThree() {
   scene.background = new THREE.Color(0x141a2c);
   scene.fog = new THREE.Fog(0x141a2c, 650, 2000);
 
-  camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 1, 3000);
+  camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.08, 3000);
   camera.rotation.order = 'YXZ';
+  scene.add(camera);   // без этого оружие в руках не рендерится
 
   const hemi = new THREE.HemisphereLight(0xdfe9ff, 0x435239, 1.25);
   scene.add(hemi);
@@ -526,7 +527,7 @@ function buildWeapon() {
   muzzle.visible = false;
   g.add(muzzle);
 
-  g.position.set(.34, -.28, -.62);
+  g.position.set(.42, -.34, -1.15);
   g.rotation.set(0.02, -0.09, 0.02);
   g.traverse(o => { o.castShadow = false; o.receiveShadow = false; });
   camera.add(g);
@@ -539,7 +540,7 @@ function weaponIdle(dt, moving) {
   recoil = Math.max(0, recoil - dt * 6);
   const bobX = Math.sin(swayT * 2.2) * (moving ? 0.012 : 0.004);
   const bobY = Math.cos(swayT * 4.4) * (moving ? 0.014 : 0.005);
-  weapon.position.set(.34 + bobX, -.28 + bobY - recoil * 0.02, -.62 + recoil * 0.13);
+  weapon.position.set(.42 + bobX, -.34 + bobY - recoil * 0.02, -1.15 + recoil * 0.13);
   weapon.rotation.set(0.02 + recoil * 0.22, -0.09 + bobX * 2, 0.02);
   if (muzzle) muzzle.visible = recoil > 0.55;
 }
