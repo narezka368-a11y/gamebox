@@ -315,6 +315,37 @@ h2 {
 .meta b { color: var(--txt); font-weight: 600; }
 .card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
 
+/* переключатель версии внутри карточки */
+.ver-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, .28);
+  width: fit-content;
+  margin-top: 4px;
+}
+.ver {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background .16s, color .16s, box-shadow .16s;
+  white-space: nowrap;
+}
+.ver:hover { color: var(--txt); }
+.ver.on {
+  color: #fff;
+  background: linear-gradient(180deg, #9a6dff, #6a3fe0);
+  box-shadow: 0 4px 14px rgba(106, 63, 224, .4);
+}
+
 .game-card.soon {
   align-items: center;
   justify-content: center;
