@@ -64,6 +64,24 @@
   .btn.ghost{background:rgba(255,255,255,.06);box-shadow:0 4px 0 rgba(0,0,0,.35)}
   .note{margin-top:14px;color:#8f83c4;font-size:12px;max-width:520px;line-height:1.5}
 
+  @media (max-height: 560px), (max-width: 760px) {
+    .screen { padding: 10px 12px 18px; }
+    .screen h1 { font-size: 19px; margin-bottom: 2px; }
+    .sub { font-size: 9.5px; letter-spacing: 2px; margin-bottom: 6px; }
+    .screen > p { display: none; }
+    .grid { gap: 6px; margin-top: 4px; max-width: 560px; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
+    .card { padding: 6px 4px; border-radius: 10px; gap: 1px; }
+    .card .e { font-size: 18px; }
+    .card .n { font-size: 11px; }
+    .card .d { font-size: 9px; }
+    .nameRow { margin-top: 6px; padding: 6px 10px; gap: 6px; font-size: 11px; }
+    .nameRow input, .nameRow select { padding: 4px 6px; font-size: 11px; width: 96px; }
+    .btns { margin-top: 8px; gap: 8px; }
+    .btn { padding: 9px 14px; font-size: 13px; }
+    .note { margin-top: 8px; font-size: 10px; max-width: 520px; }
+    #diag { font-size: 9.5px; margin-top: 4px; }
+    .screen > div[style*="margin-top:14px"] { margin-top: 6px !important; font-size: 11px !important; }
+  }
   #stick{position:absolute;left:20px;bottom:20px;width:120px;height:120px;border-radius:50%;z-index:15;display:none;
     background:radial-gradient(circle, rgba(120,90,255,.18), rgba(60,40,120,.25));
     border:2px solid rgba(160,130,255,.4);touch-action:none}
@@ -98,7 +116,14 @@
   #touchDash{position:absolute;right:22px;bottom:104px;width:64px;height:64px;border-radius:50%;z-index:15;display:none;
     align-items:center;justify-content:center;font-size:24px;
     background:linear-gradient(180deg,#b06ddb,#7a2fb0);border:2px solid rgba(255,255,255,.3);color:#fff}
-  #lookPad{position:absolute;right:0;top:0;width:55%;height:100%;z-index:14;display:none;touch-action:none}
+#lookPad{position:absolute;right:0;top:0;width:55%;height:100%;z-index:14;display:none;touch-action:none}
+
+  /* ---------- магазин ---------- */
+  .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%;max-width:560px;margin:6px 0}
+  .shop-grid .card .e{font-size:24px}
+  .shop-grid .card .d{min-height:30px}
+  .shop-grid .card[onclick]{cursor:pointer}
+
 </style>
 </head>
 <body>
@@ -154,13 +179,45 @@
   <div class="grid" id="teacherGrid"></div>
   <div style="margin-top:14px;color:#ffd93d;font-weight:bold;font-size:13px">Выбери карту</div>
   <div class="grid" id="mapGrid" style="max-width:440px"></div>
-  <div id="diag" style="margin-top:10px;color:#8f83c4;font-size:11.5px;max-width:560px;line-height:1.5"></div>
+<div id="diag" style="margin-top:10px;color:#8f83c4;font-size:11.5px;max-width:560px;line-height:1.5"></div>
+  <div style="margin-top:10px;color:#ffd93d;font-weight:bold;font-size:15px" id="coinBoxMenu">💰 0</div>
   <div class="btns">
     <button class="btn green" onclick="startGame()">▶ Начать</button>
     <button class="btn ghost" onclick="toggleFullscreen()">⛶ Полный экран</button>
+    <button class="btn ghost" onclick="openShop()">🛒 Магазин</button>
   </div>
   <div class="note">WASD / стрелки — идти · мышь — смотреть и стрелять · Пробел — прыжок · Shift — рывок · R — перезарядка · Esc — пауза.<br>
-    На телефоне: джойстик — идти, свайп справа — смотреть.</div>
+    На телефоне: джойстик — идти, свайп справа — смотреть. Монеты копятся и тратятся в магазине.</div>
+</div>
+
+<div id="shop" class="screen hidden">
+  <h1 style="font-size:clamp(20px,4vw,30px)">🛒 МАГАЗИН</h1>
+  <p style="color:#ffd93d;font-weight:bold;margin:8px 0 12px" id="shopBalance">💰 0</p>
+  <div class="shop-grid">
+    <button class="card" onclick="tryBuy('damage')">
+      <span class="e">💥</span><span class="n">Урон +4</span>
+      <span class="d">Сейчас: <span id="shopLv_damage">0</span> · <span id="shopCost_damage">35</span>💰</span>
+    </button>
+    <button class="card" onclick="tryBuy('speed')">
+      <span class="e">⚡</span><span class="n">Скорость +0.4</span>
+      <span class="d">Сейчас: <span id="shopLv_speed">0</span> · <span id="shopCost_speed">40</span>💰</span>
+    </button>
+    <button class="card" onclick="tryBuy('hp')">
+      <span class="e">❤️</span><span class="n">+20 HP</span>
+      <span class="d">Сейчас: <span id="shopLv_hp">0</span> · <span id="shopCost_hp">50</span>💰</span>
+    </button>
+    <button class="card" onclick="tryBuy('mag')">
+      <span class="e">🔫</span><span class="n">Магазин +6</span>
+      <span class="d">Сейчас: <span id="shopLv_mag">0</span> · <span id="shopCost_mag">45</span>💰</span>
+    </button>
+    <button class="card" onclick="tryBuy('fireRate')">
+      <span class="e">🔰</span><span class="n">Скорострельность</span>
+      <span class="d">Сейчас: <span id="shopLv_fireRate">0</span> · <span id="shopCost_fireRate">30</span>💰</span>
+    </button>
+  </div>
+  <div class="btns">
+    <button class="btn green" onclick="closeShop()">▶ Готово</button>
+  </div>
 </div>
 
 <div id="pause" class="screen hidden">
@@ -250,10 +307,62 @@ const maps = {
       // мебель внутри
       { x: 380, y: 220, w: 70, h: 46, type: 'desk' },
       { x: 500, y: 250, w: 56, h: 56, type: 'crate' },
-      // снаружи
+// снаружи
       { x: 140, y: 130, r: 28, type: 'tree' },
       { x: 720, y: 420, r: 28, type: 'tree' },
       { x: 780, y: 120, r: 26, type: 'tree' }
+    ]
+  },
+  cafe: {
+    name: 'Столовая', emoji: '☕', floor: 0x5a3a20, wall: 0x6b4a2c,
+    spawn: { x: 120, y: 300 }, teacher: { x: 790, y: 300 },
+    obstacles: [
+      { x: 230, y: 140, r: 34, type: 'table' },
+      { x: 470, y: 110, r: 34, type: 'table' },
+      { x: 700, y: 150, r: 34, type: 'table' },
+      { x: 230, y: 460, r: 34, type: 'table' },
+      { x: 470, y: 480, r: 34, type: 'table' },
+      { x: 700, y: 440, r: 34, type: 'table' },
+      { x: 120, y: 240, r: 20, type: 'counter' },
+      { x: 120, y: 380, r: 20, type: 'counter' }
+    ]
+  },
+  gym: {
+    name: 'Спортзал', emoji: '🏋️', floor: 0x6a3a5a, wall: 0x7a4a68,
+    spawn: { x: 120, y: 300 }, teacher: { x: 790, y: 300 },
+    obstacles: [
+      { x: 300, y: 170, w: 70, h: 30, type: 'bench' },
+      { x: 600, y: 170, w: 70, h: 30, type: 'bench' },
+      { x: 300, y: 430, w: 70, h: 30, type: 'bench' },
+      { x: 600, y: 430, w: 70, h: 30, type: 'bench' },
+      { x: 450, y: 300, r: 42, type: 'ring' },
+      { x: 140, y: 120, r: 26, type: 'horse' },
+      { x: 760, y: 480, r: 26, type: 'horse' }
+    ]
+  },
+  library: {
+    name: 'Библиотека', emoji: '📚', floor: 0x4a3620, wall: 0x5a4528,
+    spawn: { x: 120, y: 300 }, teacher: { x: 790, y: 300 },
+    obstacles: [
+      { x: 175, y: 90, w: 34, h: 150, type: 'shelf' },
+      { x: 175, y: 360, w: 34, h: 150, type: 'shelf' },
+      { x: 430, y: 90, w: 34, h: 150, type: 'shelf' },
+      { x: 430, y: 360, w: 34, h: 150, type: 'shelf' },
+      { x: 685, y: 90, w: 34, h: 150, type: 'shelf' },
+      { x: 685, y: 360, w: 34, h: 150, type: 'shelf' },
+      { x: 300, y: 300, r: 24, type: 'globe' },
+      { x: 560, y: 300, r: 22, type: 'globe' }
+    ]
+  },
+  roof: {
+    name: 'Крыша', emoji: '🌙', floor: 0x3a3a5a, wall: 0x2a2a4a, night: true,
+    spawn: { x: 120, y: 300 }, teacher: { x: 790, y: 300 },
+    obstacles: [
+      { x: 250, y: 140, w: 80, h: 40, type: 'vent' },
+      { x: 550, y: 130, w: 80, h: 40, type: 'vent' },
+      { x: 200, y: 450, w: 80, h: 40, type: 'vent' },
+      { x: 620, y: 460, w: 80, h: 40, type: 'vent' },
+      { x: 420, y: 300, r: 30, type: 'antenna' }
     ]
   }
 };
@@ -332,22 +441,27 @@ function initThree() {
   camera.rotation.order = 'YXZ';
   scene.add(camera);   // без этого оружие в руках не рендерится
 
-  const hemi = new THREE.HemisphereLight(0xdfe9ff, 0x435239, 1.25);
+const hemi = new THREE.HemisphereLight(0xdfe9ff, 0x435239, 1.25);
   scene.add(hemi);
 
-  const dir = new THREE.DirectionalLight(0xfff3d8, 1.2);
+  const dir = new THREE.DirectionalLight(0xfff3d8, 1.4);
   dir.position.set(320, 700, 220);
   dir.castShadow = shadowsOn;
-  dir.shadow.mapSize.set(1024, 1024);
+  dir.shadow.mapSize.set(2048, 2048);
   dir.shadow.camera.left = -700;
   dir.shadow.camera.right = 700;
   dir.shadow.camera.top = 700;
   dir.shadow.camera.bottom = -700;
   dir.shadow.camera.far = 2000;
-  dir.shadow.bias = -0.0015;
+  dir.shadow.bias = -0.0008;
+  dir.shadow.normalBias = 0.8;
   scene.add(dir);
 
-  scene.add(new THREE.AmbientLight(0x4a5570, 0.45));
+  const fill = new THREE.DirectionalLight(0xb0c4ff, 0.5);
+  fill.position.set(-360, 320, -180);
+  scene.add(fill);
+
+  scene.add(new THREE.AmbientLight(0x4a5570, 0.5));
 
   clock = new THREE.Clock();
   window.addEventListener('resize', onResize);
@@ -373,14 +487,51 @@ function makeFloorTexture(color) {
   const g = c.getContext('2d');
   const base = '#' + color.toString(16).padStart(6, '0');
   g.fillStyle = base; g.fillRect(0, 0, s, s);
+  // лёгкая зернистость
+  for (let i = 0; i < 400; i++) {
+    const v = Math.random();
+    g.fillStyle = v < 0.5 ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.04)';
+    g.fillRect(Math.random() * s, Math.random() * s, 3, 3);
+  }
   g.fillStyle = 'rgba(0,0,0,0.13)';
   for (let i = 0; i < s; i += s / 2) for (let j = 0; j < s; j += s / 2)
     if (((i + j) / (s / 2)) % 2 === 0) g.fillRect(i, j, s / 2, s / 2);
   g.strokeStyle = 'rgba(255,255,255,0.10)'; g.lineWidth = 3;
   g.strokeRect(1.5, 1.5, s - 3, s - 3);
+  g.strokeStyle = 'rgba(0,0,0,0.22)'; g.lineWidth = 1;
+  g.strokeRect(0.5, 0.5, s - 1, s - 1);
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(6, 4);
+  tex.anisotropy = 4;
+  return tex;
+}
+
+function makeWallTexture(color) {
+  const s = 128;
+  const c = document.createElement('canvas');
+  c.width = c.height = s;
+  const g = c.getContext('2d');
+  const base = '#' + color.toString(16).padStart(6, '0');
+  g.fillStyle = base; g.fillRect(0, 0, s, s);
+  // кирпичная кладка
+  g.strokeStyle = 'rgba(0,0,0,0.18)'; g.lineWidth = 4;
+  const rowH = 32;
+  for (let r = 0; r < s / rowH; r++) {
+    g.beginPath(); g.moveTo(0, r * rowH); g.lineTo(s, r * rowH); g.stroke();
+  }
+  for (let r = 0; r < s / rowH; r++) {
+    const off = (r % 2 === 0) ? s / 4 : s / 4 + s / 2;
+    for (let b = -1; b < 4; b++) {
+      g.beginPath(); g.moveTo(off + b * s / 2, r * rowH); g.lineTo(off + b * s / 2, (r + 1) * rowH); g.stroke();
+    }
+  }
+  // лёгкая шумовая фактура
+  g.fillStyle = 'rgba(255,255,255,0.05)';
+  for (let i = 0; i < 60; i++) g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(4, 2);
   return tex;
 }
 
@@ -482,9 +633,62 @@ const SKINS = [
 ];
 
 let weapon = null, muzzle = null, ammo = 30, magSize = 30;
-let reloading = false, reloadEnd = 0, lastShot = 0, recoil = 0, swayT = 0;
+  let reloading = false, reloadEnd = 0, lastShot = 0, recoil = 0, swayT = 0;
+  let playerDamage = 20;      // урон выстрела, растёт от прокачки
+  let fireRateMs = 95;        // интервал между выстрелами
 let skinIndex = 0, playerName = 'Школьник', bossMode = false, liteMode = false;
 let bossState = null, minionList = [], enemyShots = [], tracers = [];
+
+/* ---------- валюта и прокачка (сохраняется) ---------- */
+const SAVE_KEY = 'gb:fps:save2';
+let wallet = 0;             // накопленные монеты (сохраняются)
+let upgrade = { speed: 0, damage: 0, hp: 0, mag: 0, fireRate: 0 };   // уровни улучшений
+const UPGRADE_COST = { speed: 40, damage: 35, hp: 50, mag: 45, fireRate: 30 };
+
+function loadWallet() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      wallet = d.wallet || 0;
+      upgrade = Object.assign({ speed: 0, damage: 0, hp: 0, mag: 0, fireRate: 0 }, d.upgrade || {});
+    }
+  } catch (e) {}
+}
+function saveWallet() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ wallet, upgrade })); } catch (e) {}
+}
+function tryBuy(kind) {
+  const base = UPGRADE_COST[kind];
+  if (base === undefined) return false;
+  if (upgrade[kind] >= 6) return false;
+  const cost = base * (upgrade[kind] + 1);
+  if (wallet < cost) return false;
+  wallet -= cost;
+  upgrade[kind]++;
+  saveWallet();
+  updateShopUI();
+  return true;
+}
+function refreshPlayerStats() {
+  player.speed = 3.6 + upgrade.speed * 0.42;
+  magSize = 30 + upgrade.mag * 6;
+  if (ammo > magSize) ammo = magSize;
+}
+function updateShopUI() {
+  const cb = document.getElementById('coinBoxMenu');
+  if (cb) cb.textContent = '💰 ' + wallet;
+  const shop = document.getElementById('shop');
+  if (!shop) return;
+  for (const k of Object.keys(UPGRADE_COST)) {
+    const c = document.getElementById('shopCost_' + k);
+    const lv = document.getElementById('shopLv_' + k);
+    const maxed = upgrade[k] >= 6;
+    if (c) c.textContent = maxed ? 'МАКС' : (UPGRADE_COST[k] * (upgrade[k] + 1));
+    if (lv) lv.textContent = upgrade[k] + (maxed ? '/6' : '');
+  }
+  document.getElementById('shopBalance').textContent = '💰 ' + wallet;
+}
 
 function gunMat(color, rough, metal) {
   return new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal });
@@ -540,7 +744,7 @@ function buildWeapon() {
   rearSight.position.set(0, .1, -.16);
   g.add(rearSight);
 
-  muzzle = new THREE.Mesh(
+muzzle = new THREE.Mesh(
     new THREE.ConeGeometry(.09, .22, 8),
     new THREE.MeshBasicMaterial({ color: 0xffd27a, transparent: true, opacity: .95 })
   );
@@ -548,6 +752,43 @@ function buildWeapon() {
   muzzle.position.set(0, .025, -.95);
   muzzle.visible = false;
   g.add(muzzle);
+
+  // руки, держащие оружие — слева и справа от него
+  const ARM_MAT = { skin: gunMat(0xe8b48c, .75, 0), sleeve: gunMat(0x8a6a3a, .8, 0) };
+  function addHand(side) {
+    const hand = new THREE.Group();
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(.055, .075, .34, 10), ARM_MAT.sleeve);
+    sleeve.rotation.x = Math.PI / 2;
+    sleeve.position.set(0, 0, -.10);
+    hand.add(sleeve);
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(.055, .055, .30, 10), ARM_MAT.skin);
+    forearm.rotation.x = Math.PI / 2;
+    forearm.position.set(0, 0, .10);
+    hand.add(forearm);
+    const palm = new THREE.Mesh(new THREE.SphereGeometry(.085, 12, 10), ARM_MAT.skin);
+    palm.position.set(0, -0.005, .26);
+    hand.add(palm);
+    // пальцы
+    for (let i = 0; i < 4; i++) {
+      const finger = new THREE.Mesh(new THREE.CylinderGeometry(.016, .014, .10, 6), ARM_MAT.skin);
+      finger.rotation.x = Math.PI / 2;
+      finger.position.set(-0.035 + i * 0.024, -0.03, .34);
+      hand.add(finger);
+    }
+    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(.02, .016, .12, 6), ARM_MAT.skin);
+    thumb.rotation.z = side * 0.5;
+    thumb.position.set(side * 0.10, 0.02, .28);
+    hand.add(thumb);
+    // рассаколовка: правая рука — спереди у цевья, левая — сзади у приклада
+    hand.position.set(side * .17, -0.05, side > 0 ? -0.42 : 0.30);
+    hand.rotation.z = side * 0.25;
+    g.add(hand);
+    return hand;
+  }
+  const leftHand = addHand(-1);
+  const rightHand = addHand(1);
+  leftHand.rotation.y = 0.5;
+  rightHand.rotation.y = -0.5;
 
   g.position.set(.42, -.34, -1.45);
   g.rotation.set(0.02, -0.09, 0.02);
@@ -562,7 +803,8 @@ function weaponIdle(dt, moving) {
   recoil = Math.max(0, recoil - dt * 6);
   const bobX = Math.sin(swayT * 2.2) * (moving ? 0.012 : 0.004);
   const bobY = Math.cos(swayT * 4.4) * (moving ? 0.014 : 0.005);
-  weapon.position.set(.42 + bobX, -.34 + bobY - recoil * 0.02, -1.45 + recoil * 0.13);
+  const kick = recoil * 0.02;
+  weapon.position.set(.42 + bobX, -.34 + bobY - kick * 0.6, -1.45 + recoil * 0.13);
   weapon.rotation.set(0.02 + recoil * 0.22, -0.09 + bobX * 2, 0.02);
   if (muzzle) muzzle.visible = recoil > 0.55;
 }
@@ -577,8 +819,8 @@ function startReload() {
 function shootOnce() {
   if (state !== 'playing' || reloading) return;
   if (ammo <= 0) { startReload(); return; }
-  const now = performance.now();
-  if (now - lastShot < 95) return;
+const now = performance.now();
+  if (now - lastShot < fireRateMs) return;
   lastShot = now;
   ammo--;
   recoil = 1;
@@ -600,8 +842,8 @@ function shootOnce() {
       if (dot < 0.86) continue;
       if (d < bestD) { bestD = d; best = tg; }
     }
-    if (best) {
-      if (best.kind === 'boss') damageBoss(20); else damageMinion(best.m, 20);
+if (best) {
+      if (best.kind === 'boss') damageBoss(playerDamage); else damageMinion(best.m, playerDamage);
       hitPoint = { x: best.x, y: cam.eye, z: best.y };
     }
   } else {
@@ -621,8 +863,8 @@ function shootOnce() {
         let obj = hits[0].object;
         while (obj && !obj.userData.owner) obj = obj.parent;
         const owner = obj && obj.userData.owner;
-        if (owner === 'boss') damageBoss(20);
-        else if (owner && owner.minion) damageMinion(owner.minion, 20);
+        if (owner === 'boss') damageBoss(playerDamage);
+        else if (owner && owner.minion) damageMinion(owner.minion, playerDamage);
       }
     }
     if (!hitPoint) {
@@ -759,7 +1001,8 @@ function buildLevel() {
     floor.receiveShadow = true;
     worldGroup.add(floor);
 
-    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(1200, 900), new THREE.MeshBasicMaterial({ color: 0x151a26 }));
+const ceilColor = map.night ? 0x0a0d20 : 0x151a26;
+    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(1200, 900), new THREE.MeshBasicMaterial({ color: ceilColor }));
     ceil.rotation.x = Math.PI / 2;
     ceil.position.set(450, 150, 300);
     worldGroup.add(ceil);
@@ -771,8 +1014,9 @@ function buildLevel() {
       { x: -10, z: 300, w: 20, d: 620 },
       { x: 910, z: 300, w: 20, d: 620 }
     ];
+    const wallTex = makeWallTexture(map.wall);
     for (const w of walls) {
-      const box = new THREE.Mesh(new THREE.BoxGeometry(w.w, 150, w.d), wallMat);
+      const box = new THREE.Mesh(new THREE.BoxGeometry(w.w, 150, w.d), wallTex);
       box.position.set(w.x, 75, w.z);
       box.receiveShadow = true; box.castShadow = true;
       worldGroup.add(box);
@@ -799,6 +1043,65 @@ function buildLevel() {
             new THREE.MeshStandardMaterial({ color: 0x63b4ea, roughness: .15, metalness: .5 }));
           water.position.set(o.x, 27, o.y);
           worldGroup.add(water);
+        } else if (o.type === 'table') {
+          const top = new THREE.Mesh(new THREE.CylinderGeometry(o.r, o.r * .96, 8, 20), mat(0x8a5a30, .75));
+          top.position.set(o.x, 14, o.y); top.castShadow = true; top.receiveShadow = true;
+          worldGroup.add(top);
+          for (let i = 0; i < 4; i++) {
+            const a = (i / 4) * TAU + Math.PI / 4;
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 12, 8), mat(0x5a3a1a, .85));
+            leg.position.set(o.x + Math.cos(a) * o.r * .8, 6, o.y + Math.sin(a) * o.r * .8);
+            worldGroup.add(leg);
+          }
+        } else if (o.type === 'counter') {
+          const base = new THREE.Mesh(new THREE.CylinderGeometry(o.r, o.r, 90, 16), mat(0x6b4a2c, .8));
+          base.position.set(o.x, 45, o.y); base.castShadow = true; base.receiveShadow = true;
+          worldGroup.add(base);
+          const top2 = new THREE.Mesh(new THREE.CylinderGeometry(o.r * 1.05, o.r * 1.05, 8, 16), mat(0x8a6a3a, .7));
+          top2.position.set(o.x, 90, o.y);
+          worldGroup.add(top2);
+        } else if (o.type === 'ring') {
+          const ringM = new THREE.MeshStandardMaterial({ color: 0xffe9a0, metalness: .8, roughness: .3 });
+          const hoop = new THREE.Mesh(new THREE.TorusGeometry(o.r * .9, 4, 10, 26), ringM);
+          hoop.position.set(o.x, 130, o.y); hoop.castShadow = true;
+          worldGroup.add(hoop);
+          const pole = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 130, 12), mat(0x4a3a6a, .8));
+          pole.position.set(o.x, 65, o.y); pole.castShadow = true;
+          worldGroup.add(pole);
+        } else if (o.type === 'horse') {
+          const top3 = new THREE.Mesh(new THREE.BoxGeometry(30, 8, 10), mat(0xa06a2a, .8));
+          top3.position.set(o.x, 68, o.y); top3.castShadow = true;
+          worldGroup.add(top3);
+          for (const s of [-1, 1]) {
+            const leg = new THREE.Mesh(new THREE.BoxGeometry(6, 55, 6), mat(0x6a4526, .85));
+            leg.position.set(o.x + s * 12, 27, o.y);
+            worldGroup.add(leg);
+          }
+        } else if (o.type === 'globe') {
+          const pole2 = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 90, 10), mat(0x3a3a3a, .9));
+          pole2.position.set(o.x, 45, o.y); pole2.castShadow = true;
+          worldGroup.add(pole2);
+          const globe = new THREE.Mesh(new THREE.SphereGeometry(o.r, 20, 16),
+            new THREE.MeshStandardMaterial({ color: 0x4aa3ff, roughness: .4, metalness: .3 }));
+          globe.position.set(o.x, 94, o.y); globe.castShadow = true;
+          worldGroup.add(globe);
+        } else if (o.type === 'antenna') {
+          const pole3 = new THREE.Mesh(new THREE.CylinderGeometry(4, 8, 60, 10), mat(0x5a5a6a, .9));
+          pole3.position.set(o.x, 30, o.y); pole3.castShadow = true;
+          worldGroup.add(pole3);
+          const dish = new THREE.Mesh(new THREE.SphereGeometry(o.r, 14, 10, 0, Math.PI * 2, 0, Math.PI * .6),
+            new THREE.MeshStandardMaterial({ color: 0x9aa4b2, metalness: .6, roughness: .4 }));
+          dish.position.set(o.x, 66, o.y); dish.rotation.x = -Math.PI * .28;
+          worldGroup.add(dish);
+        } else if (o.type === 'vent') {
+          for (const s of [-1, 1]) {
+            const slat = new THREE.Mesh(new THREE.BoxGeometry(o.w * .8, 4, 6), mat(0x8a8a9a, .8));
+            slat.position.set(o.x + o.w / 2, 14 + s * 8, o.y + o.h / 2);
+            worldGroup.add(slat);
+          }
+          const frame = new THREE.Mesh(new THREE.BoxGeometry(o.w, 30, o.h * .3), mat(0x6a6a7a, .9));
+          frame.position.set(o.x + o.w / 2, 24, o.y + o.h / 2); frame.castShadow = true;
+          worldGroup.add(frame);
         } else {
           const col = new THREE.Mesh(new THREE.CylinderGeometry(o.r * .8, o.r, 130, 20), mat(0xb9c2d6, .8));
           col.position.set(o.x, 65, o.y); col.castShadow = true; col.receiveShadow = true;
@@ -806,15 +1109,30 @@ function buildLevel() {
         }
       } else {
         const isWall = o.type === 'wall';
-        const h = isWall ? 130 : (o.type === 'crate' ? 56 : 46);
-        const col = isWall ? 0xb08a63 : (o.type === 'crate' ? 0xa9764a : 0x8a5a30);
+        const isShelf = o.type === 'shelf';
+        const h = isWall ? 130 : (isShelf ? 130 : (o.type === 'crate' ? 56 : 46));
+        const col = isWall ? 0xb08a63 : (isShelf ? 0x5a30a0 : (o.type === 'crate' ? 0xa9764a : 0x8a5a30));
         const box = new THREE.Mesh(new THREE.BoxGeometry(o.w, h, o.h), mat(col, isWall ? .95 : .85));
         box.position.set(o.x + o.w / 2, h / 2, o.y + o.h / 2);
         box.castShadow = true; box.receiveShadow = true;
         worldGroup.add(box);
-        const top = new THREE.Mesh(new THREE.BoxGeometry(o.w * .94, 3, o.h * .9), mat(0xc79a6a, .7));
-        top.position.set(o.x + o.w / 2, h + 1.5, o.y + o.h / 2);
-        worldGroup.add(top);
+        if (isShelf) {
+          for (let i = 1; i < 4; i++) {
+            const plank = new THREE.Mesh(new THREE.BoxGeometry(o.w + 2, 2, o.h + 2), mat(0x8a6a4a, .7));
+            plank.position.set(o.x + o.w / 2, i * 30, o.y + o.h / 2);
+            worldGroup.add(plank);
+            for (let b = 1; b < 4; b++) {
+              const book = new THREE.Mesh(new THREE.BoxGeometry(6, 9, 16),
+                mat([0xd64a4a, 0x4a9ad6, 0x4ad67a][(i + b) % 3], .7));
+              book.position.set(o.x + o.w / 2 + (b - 2) * 10, i * 30 + 6, o.y + o.h / 2);
+              worldGroup.add(book);
+            }
+          }
+        } else {
+          const top = new THREE.Mesh(new THREE.BoxGeometry(o.w * .94, 3, o.h * .9), mat(0xc79a6a, .7));
+          top.position.set(o.x + o.w / 2, h + 1.5, o.y + o.h / 2);
+          worldGroup.add(top);
+        }
       }
     }
 
@@ -831,6 +1149,19 @@ function buildLevel() {
       const lamp = new THREE.PointLight(0xffd9a0, 0.9, 320, 2);
       lamp.position.set(hs.x + hs.w / 2, 110, hs.y + hs.h / 2);
       worldGroup.add(lamp);
+    }
+
+    // ночное небо на крыше + фонари
+    if (map.night) {
+      const moon = new THREE.Mesh(new THREE.SphereGeometry(22, 20, 14),
+        new THREE.MeshBasicMaterial({ color: 0xdfe9ff }));
+      moon.position.set(760, 130, 60);
+      worldGroup.add(moon);
+      for (const [fx, fz] of [[120, 90], [760, 90], [120, 510], [760, 510]]) {
+        const lp = new THREE.PointLight(0xffd9a0, 1.1, 340, 2);
+        lp.position.set(fx, 120, fz);
+        worldGroup.add(lp);
+      }
     }
   }
 
@@ -897,10 +1228,11 @@ function buildLevel() {
     document.getElementById('bossBar').classList.add('hidden');
   }
 
-  cam.x = map.spawn.x; cam.y = map.spawn.y;
+cam.x = map.spawn.x; cam.y = map.spawn.y;
   cam.yaw = Math.atan2(-(teacherState.x - cam.x), -(teacherState.y - cam.y));
   cam.pitch = 0;
-  player.hp = 100; player.invuln = 0; player.dashCd = 0; player.dashT = 0;
+  player.maxHp = 100 + upgrade.hp * 20;
+  player.hp = player.maxHp; player.invuln = 0; player.dashCd = 0; player.dashT = 0;
   player.y = 0; player.vy = 0; player.onGround = true;
   coins = 0; combo = 1; comboN = 0; comboTimer = 0;
   activePw = { shield: 0, magnet: 0, x2: 0 };
@@ -952,7 +1284,7 @@ function drawMinimap() {
 addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   keys[k] = true;
-  if (k === 'escape') { if (state === 'playing') pauseGame(); else if (state === 'paused') resumeGame(); }
+  if (k === 'escape') { if (state === 'playing') pauseGame(); else if (state === 'paused') resumeGame(); else if (state === 'shop') closeShop(); }
   if (k === 'shift' || k === 'q') tryDash();
   if (k === ' ') shootOnce();
   if (k === 'r') startReload();
@@ -1146,8 +1478,20 @@ function buildMenus() {
 
 /* ---------- экраны ---------- */
 function show(id) {
-  ['menu', 'pause', 'over'].forEach(k => document.getElementById(k).classList.add('hidden'));
+  ['menu', 'pause', 'over', 'shop'].forEach(k => document.getElementById(k).classList.add('hidden'));
   if (id) document.getElementById(id).classList.remove('hidden');
+}
+function openShop() {
+  if (state === 'playing') pauseGame();
+  state = 'shop';
+  show('shop');
+  updateShopUI();
+}
+function closeShop() {
+  state = 'menu';
+  show('menu');
+  refreshPlayerStats();
+  updateShopUI();
 }
 function hideGameUI(hide) {
   document.getElementById('hud').classList.toggle('hidden', hide);
@@ -1170,6 +1514,9 @@ function startGame() {
   const bossEl = document.getElementById('bossMode');
   if (bossEl) bossMode = bossEl.checked;
   savePrefs();
+  playerDamage = 20 + upgrade.damage * 4;
+  fireRateMs = Math.max(55, 95 - upgrade.fireRate * 6);
+  refreshPlayerStats();
   ammo = magSize; reloading = false;
   buildLevel();
   if (!USE_CANVAS && !weapon) buildWeapon();
@@ -1224,8 +1571,8 @@ function update(dt) {
   if (comboTimer > 0) { comboTimer -= dt * 60; if (comboTimer <= 0) { combo = 1; comboN = 0; } }
 
   /* движение */
-  const d = worldMoveDir();
-  const base = 235;
+const d = worldMoveDir();
+  const base = (235 + upgrade.speed * 28);
   let mult = 1;
   if (player.dashT > 0) mult = 2.7;
   let vx = d.x * base * mult, vz = d.y * base * mult;
@@ -1279,9 +1626,12 @@ function update(dt) {
       c.mesh.rotation.y += dt * 2.2;
       c.mesh.position.y = 26 + Math.sin(c.phase) * 3;
     }
-    const dd = Math.hypot(c.x - cam.x, c.y - cam.y);
+const dd = Math.hypot(c.x - cam.x, c.y - cam.y);
     if (dd < 30) {
-      coins += Math.round(c.value * combo * (activePw.x2 > 0 ? 2 : 1));
+      const got = Math.round(c.value * combo * (activePw.x2 > 0 ? 2 : 1));
+      coins += got;
+      wallet += got;
+      saveWallet();
       comboN++; comboTimer = 130;
       combo = 1 + Math.min(2, Math.floor(comboN / 5) * 0.5);
       if (c.mesh) { worldGroup.remove(c.mesh); disposeObj(c.mesh); }
@@ -1817,8 +2167,10 @@ function writeDiag() {
 }
 
 loadPrefs();
+loadWallet();
 bindPrefs();
 buildMenus();
+updateShopUI();
 
 try {
   if (!USE_CANVAS && !hasWebGL()) {
