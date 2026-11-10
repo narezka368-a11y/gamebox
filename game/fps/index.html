@@ -149,6 +149,10 @@
 </div>
 <canvas id="mapBox" class="hidden" width="252" height="188"></canvas>
 
+<div id="hintBar" class="hidden" style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:16;
+  background:rgba(10,8,22,.85);border:1.5px solid rgba(255,217,61,.55);border-radius:12px;
+  padding:8px 16px;color:#ffe9a3;font-weight:bold;font-size:14px;pointer-events:none;text-align:center;max-width:80vw"></div>
+
 <div id="stick"><div id="stickKnob"></div></div>
 <button id="touchDash">🌀</button>
 <button id="touchFire">🔫</button>
@@ -220,6 +224,17 @@
   </div>
 </div>
 
+<div id="taskModal" class="screen hidden" style="z-index:30;background:rgba(9,5,24,.96)">
+  <h1 style="font-size:clamp(20px,4.5vw,32px)">📋 ЗАДАНИЕ</h1>
+  <p id="taskName" style="color:#ffd93d;font-weight:bold;font-size:clamp(14px,3vw,18px);margin:4px 0 12px"></p>
+  <p id="taskQuestion" style="color:#e8e0ff;font-size:clamp(15px,3vw,20px);max-width:540px;line-height:1.4;margin-bottom:16px"></p>
+  <div id="taskOpts" class="grid" style="max-width:440px"></div>
+  <p id="taskResult" style="color:#4ade80;font-weight:bold;font-size:16px;margin-top:14px"></p>
+  <div class="btns">
+    <button class="btn ghost" onclick="closeTask()">◀ Закрыть</button>
+  </div>
+</div>
+
 <div id="pause" class="screen hidden">
   <h1 style="font-size:clamp(20px,4vw,30px)">ПАУЗА</h1>
   <div class="btns">
@@ -257,7 +272,79 @@ const teachers = {
   rus:  { name: 'Русичка',      emoji: '📚', speed: 2.4, color: 0xb06ddb }
 };
 
+/* ---------- генератор школы ---------- */
+function buildSchoolMap() {
+  const T = 16, obs = [], tasks = [], rooms = [];
+  function wall(x, y, w, h) { obs.push({ x, y, w, h, type: 'wall' }); }
+  const roomCols = [[16, 224], [224, 448], [448, 672], [672, 884]];
+  const corY0 = 252, corY1 = 344;              // коридор по центру: y 252..344, высота прохода 92
+  const roomTop = 16, roomBot = 584;
+  // внешние стены
+  wall(0, 0, 900, T); wall(0, 584, 900, T); wall(0, 0, T, 600); wall(884, 0, T, 600);
+  // стены коридора с дверными проёмами в каждый кабинет
+  const gapW = 120;
+  for (const [a, b] of roomCols) {
+    const cx = (a + b) / 2, g0 = cx - gapW / 2, g1 = cx + gapW / 2;
+    wall(a, corY0, g0 - a, T); wall(g1, corY0, b - g1, T);
+    wall(a, corY1, g0 - a, T); wall(g1, corY1, b - g1, T);
+  }
+  // вертикальные перегородки между кабинетами (север и юг коридора)
+  for (const xx of [224, 448, 672]) {
+    wall(xx, roomTop, T, corY0 - roomTop);
+    wall(xx, corY1 + T, T, roomBot - (corY1 + T));
+  }
+  const taskDefs = [
+    { name: 'Кабинет математики', emoji: '📐', q: 'Сколько будет 5 + 3?', opts: ['6', '8', '9', '7'], ans: 1 },
+    { name: 'Кабинет русского', emoji: '📖', q: 'Укажи имя существительное:', opts: ['«бежать»', '«стол»', '«быстрый»', '«красиво»'], ans: 1 },
+    { name: 'Кабинет географии', emoji: '🌍', q: 'Столица России?', opts: ['«Минск»', '«Киев»', '«Москва»', '«Париж»'], ans: 2 },
+    { name: 'Кабинет биологии', emoji: '🧬', q: 'Чем дышат люди?', opts: ['водой', 'кислородом', 'углекислым газом', 'гелием'], ans: 1 },
+    { name: 'Кабинет истории', emoji: '🏛️', q: 'Кто первым полетел в космос?', opts: ['Королёв', 'Гагарин', 'Терешкова', 'Леонов'], ans: 1 },
+    { name: 'Кабинет химии', emoji: '⚗️', q: 'Формула воды?', opts: ['H₂O', 'CO₂', 'O₂', 'NaCl'], ans: 0 },
+    { name: 'Кабинет литературы', emoji: '📚', q: 'Кто написал «Золушку»?', opts: ['Пушкин', 'Андерсен', 'Шарль Перро', 'Есенин'], ans: 2 },
+    { name: 'Кабинет английского', emoji: '🔤', q: '«Собака» по-английски?', opts: ['cat', 'dog', 'bird', 'fish'], ans: 1 }
+  ];
+  let ti = 0;
+  for (const [rIdx, [a, b]] of roomCols.entries()) {
+    const cx = (a + b) / 2;
+    for (const side of ['n', 's']) {
+      const top = side === 'n' ? roomTop : corY1 + T;
+      const roomId = side + (rIdx + 1);
+      const rgap = b - a, deskY1 = top + 50, deskY2 = top + 140;
+      // парты в глубине кабинета
+      const dx1 = a + (rgap - 178) / 2, dx2 = dx1 + 108;
+      obs.push({ x: dx1, y: deskY1, w: 70, h: 34, type: 'desk' });
+      obs.push({ x: dx1, y: deskY2, w: 70, h: 34, type: 'desk' });
+      obs.push({ x: dx2, y: deskY1, w: 70, h: 34, type: 'desk' });
+      obs.push({ x: dx2, y: deskY2, w: 70, h: 34, type: 'desk' });
+      // стойка задания — в центре комнаты
+      const taskCy = side === 'n' ? top + 150 : top + 150;
+      obs.push({ x: cx, y: taskCy, r: 24, type: 'counter' });
+      const def = taskDefs[ti % taskDefs.length]; ti++;
+      rooms.push({ id: roomId, name: def.name, emoji: def.emoji, x: a, y: top, w: b - a, h: corY0 - roomTop });
+      tasks.push({ id: 'task_' + roomId, name: def.name, emoji: def.emoji, q: def.q,
+        opts: def.opts, ans: def.ans, x: cx, y: taskCy, done: false });
+    }
+  }
+  // учителя-патрульные по коридору
+  const teachersArr = [
+    { x: 130, y: 300, patrol: [{ x: 110, y: 300 }, { x: 770, y: 300 }], speed: 2.6 },
+    { x: 360, y: 286, patrol: [{ x: 250, y: 286 }, { x: 700, y: 286 }], speed: 2.2 },
+    { x: 560, y: 312, patrol: [{ x: 220, y: 312 }, { x: 800, y: 312 }], speed: 2.9 },
+    { x: 700, y: 300, patrol: [{ x: 300, y: 300 }, { x: 840, y: 300 }], speed: 2.3 }
+  ];
+  return {
+    name: 'Школа', emoji: '🏫', floor: 0x3f5f42, wall: 0x8a7a5a,
+    spawn: { x: 120, y: 300 },
+    teacher: { x: 130, y: 300 },
+    obstacles: obs,
+    rooms,
+    tasks,
+    teachers: teachersArr
+  };
+}
+
 const maps = {
+  school: buildSchoolMap(),
   corridor: {
     name: 'Коридор', emoji: '🏫', floor: 0x2f4a2f, wall: 0x3f5f42,
     spawn: { x: 140, y: 300 }, teacher: { x: 780, y: 300 },
@@ -388,12 +475,13 @@ function sizeCanvas() {
 let worldGroup = null;
 let state = 'menu';
 let selectedTeacher = 'geo';
-let selectedMap = 'corridor';
+let selectedMap = 'school';
 let map = null;
 
 const cam = { x: 140, y: 300, yaw: 0, pitch: 0, eye: 54 };
 const player = { r: 16, speed: 3.6, hp: 100, invuln: 0, dashT: 0, dashCd: 0, dashX: 0, dashY: 0, bob: 0, y: 0, vy: 0, onGround: true };
 let teacherState = null;
+let teachersList = [];
 let coinList = [], pwList = [], particleMeshes = [];
 let coins = 0, combo = 1, comboN = 0, comboTimer = 0;
 let activePw = { shield: 0, magnet: 0, x2: 0 };
@@ -1204,19 +1292,25 @@ const ceilColor = map.night ? 0x0a0d20 : 0x151a26;
     pwList.push({ mesh, x: px, y: py, kind: p.kind, color: p.color });
   }
 
-  const t = teachers[selectedTeacher];
-  let tGroup = null;
-  if (!USE_CANVAS) {
-    tGroup = makeCharacter(t.color, { angry: true, hair: 0x2a2030 });
-    tGroup.position.set(map.teacher.x, 0, map.teacher.y);
-    worldGroup.add(tGroup);
-  }
-
-  teacherState = {
-    group: tGroup,
-    x: map.teacher.x, y: map.teacher.y,
-    r: 20, speed: t.speed, angle: 0, step: 0, color: t.color
-  };
+const t = teachers[selectedTeacher];
+  // несколько учителей-патрульных (для школы — из map.teachers, иначе один)
+  const patrolDefs = (map.teachers && map.teachers.length ? map.teachers : [{ x: map.teacher.x, y: map.teacher.y, patrol: null, speed: t.speed }]);
+  teachersList = [];
+  const cols = [t.color, 0xd06ad0, 0xe0a040, 0x40a0e0];
+  patrolDefs.forEach((pd, i) => {
+    let g = null;
+    if (!USE_CANVAS) {
+      g = makeCharacter(cols[i % cols.length], { angry: true, hair: 0x2a2030 });
+      g.position.set(pd.x, 0, pd.y);
+      worldGroup.add(g);
+    }
+    teachersList.push({
+      group: g, x: pd.x, y: pd.y, r: 20, speed: pd.speed,
+      color: cols[i % cols.length], angle: 0, step: i * 2,
+      patrol: pd.patrol || null, patrolIdx: 0
+    });
+  });
+  teacherState = teachersList[0];
 
   bossState = null; minionList = []; enemyShots = []; tracers = [];
   if (bossMode) {
@@ -1266,9 +1360,9 @@ function drawMinimap() {
   }
   mctx.fillStyle = '#ffd93d';
   for (const c of coinList) { mctx.fillRect(c.x * sx - 1, c.y * sy - 1, 2, 2); }
-  if (teacherState) {
-    mctx.fillStyle = '#ff5a5a';
-    mctx.beginPath(); mctx.arc(teacherState.x * sx, teacherState.y * sy, 4, 0, TAU); mctx.fill();
+mctx.fillStyle = '#ff5a5a';
+  for (const tch of teachersList) {
+    mctx.beginPath(); mctx.arc(tch.x * sx, tch.y * sy, 4, 0, TAU); mctx.fill();
   }
   mctx.fillStyle = '#4ade80';
   mctx.beginPath(); mctx.arc(cam.x * sx, cam.y * sy, 4, 0, TAU); mctx.fill();
@@ -1285,9 +1379,10 @@ addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   keys[k] = true;
   if (k === 'escape') { if (state === 'playing') pauseGame(); else if (state === 'paused') resumeGame(); else if (state === 'shop') closeShop(); }
-  if (k === 'shift' || k === 'q') tryDash();
+if (k === 'shift' || k === 'q') tryDash();
   if (k === ' ') shootOnce();
   if (k === 'r') startReload();
+  if (k === 'e' || k === 'у') tryInteractTask();
   if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
 });
 addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
@@ -1478,7 +1573,7 @@ function buildMenus() {
 
 /* ---------- экраны ---------- */
 function show(id) {
-  ['menu', 'pause', 'over', 'shop'].forEach(k => document.getElementById(k).classList.add('hidden'));
+  ['menu', 'pause', 'over', 'shop', 'taskModal'].forEach(k => document.getElementById(k).classList.add('hidden'));
   if (id) document.getElementById(id).classList.remove('hidden');
 }
 function openShop() {
@@ -1492,6 +1587,67 @@ function closeShop() {
   show('menu');
   refreshPlayerStats();
   updateShopUI();
+}
+
+/* ---------- задания в кабинетах ---------- */
+let activeTask = null;
+let taskAnswered = false;
+let nearTask = null;
+
+function tryInteractTask() {
+  if (state !== 'playing') return;
+  if (nearTask && !nearTask.done) openTask(nearTask);
+}
+function openTask(t) {
+  if (t.done) return;
+  activeTask = t;
+  taskAnswered = false;
+  state = 'task';
+  document.getElementById('taskName').textContent = t.emoji + ' ' + t.name;
+  document.getElementById('taskQuestion').textContent = t.q;
+  document.getElementById('taskResult').textContent = '';
+  const box = document.getElementById('taskOpts');
+  box.innerHTML = t.opts.map((o, i) =>
+    `<button class="card" data-opt="${i}"><span class="n">${o}</span></button>`).join('');
+  box.querySelectorAll('[data-opt]').forEach(b =>
+    b.addEventListener('click', () => answerTask(parseInt(b.dataset.opt, 10))));
+  show(null);
+  document.getElementById('taskModal').classList.remove('hidden');
+}
+function answerTask(idx) {
+  if (!activeTask || taskAnswered) return;
+  taskAnswered = true;
+  const ok = idx === activeTask.ans;
+  const resEl = document.getElementById('taskResult');
+  if (ok) {
+    activeTask.done = true;
+    const reward = 30;
+    wallet += reward;
+    saveWallet();
+    resEl.textContent = '✅ Верно! +' + reward + ' 💰';
+    resEl.style.color = '#4ade80';
+    if (typeof Sfx !== 'undefined' && Sfx.coin) Sfx.coin();
+  } else {
+    resEl.textContent = '❌ Неверно. Попробуй ещё!';
+    resEl.style.color = '#ff6b6b';
+    taskAnswered = false;
+    if (typeof Sfx !== 'undefined' && Sfx.hit) Sfx.hit();
+  }
+  map = maps[selectedMap];
+  map.tasks.find(t0 => t0.id === activeTask.id).done = activeTask.done;
+}
+function closeTask() {
+  if (activeTask && activeTask.done) {
+    activeTask = null;
+    state = 'playing';
+    show(null);
+    updateHUD();
+  } else if (activeTask) {
+    // просто закрыли — ещё можно вернуться
+    activeTask = null;
+    state = 'playing';
+    show(null);
+  }
 }
 function hideGameUI(hide) {
   document.getElementById('hud').classList.toggle('hidden', hide);
@@ -1600,23 +1756,39 @@ const d = worldMoveDir();
     camera.rotation.x = cam.pitch;
   }
 
-  /* учитель */
-  const t = teacherState;
-  const dx = cam.x - t.x, dz = cam.y - t.y;
-  const dist = Math.hypot(dx, dz) || 1;
-  const tSp = t.speed * 62 * dt * (dist < 260 ? 1.15 : 1);
-  const ux = dx / dist, uz = dz / dist;
-  const tx2 = t.x + ux * tSp, tz2 = t.y + uz * tSp;
-  if (!collideAny(tx2, t.y, t.r)) t.x = tx2; else if (!collideAny(t.x, t.y + uz * tSp, t.r)) t.y += uz * tSp;
-  if (!collideAny(t.x, tz2, t.r)) t.y = tz2; else if (!collideAny(t.x + ux * tSp, t.y, t.r)) t.x += ux * tSp;
-  t.x = clamp(t.x, 34, 866); t.y = clamp(t.y, 34, 566);
-  t.step += dt * 10;
-  if (t.group) {
-    t.group.position.set(t.x, 0, t.y);
-    t.group.rotation.y = Math.atan2(dx, dz);
-    const legs = t.group.userData.legs || [];
-    legs.forEach((leg, i) => { leg.rotation.x = Math.sin(t.step + i * Math.PI) * 0.55; });
+/* учителя: патруль + погоня, если увидели игрока */
+  let nearDist = 1e9, nearT = null;
+  for (const t of teachersList) {
+    const dx = cam.x - t.x, dz = cam.y - t.y;
+    const dist = Math.hypot(dx, dz) || 1;
+    if (dist < nearDist) { nearDist = dist; nearT = t; }
+    // если игрок рядом и виден — погоня, иначе патруль
+    let tx2, tz2;
+    if (dist < 340) {
+      const tSp = t.speed * 62 * dt * (dist < 240 ? 1.2 : 1);
+      tx2 = t.x + (dx / dist) * tSp; tz2 = t.y + (dz / dist) * tSp;
+    } else if (t.patrol && t.patrol.length) {
+      const p1 = t.patrol[t.patrolIdx % t.patrol.length];
+      const p2 = t.patrol[(t.patrolIdx + 1) % t.patrol.length];
+      const pdx = p2.x - t.x, pdz = p2.y - t.y;
+      const pd = Math.hypot(pdx, pdz) || 1;
+      const tSp = t.speed * 45 * dt;
+      if (pd < 6) t.patrolIdx++;
+      tx2 = t.x + (pdx / pd) * tSp; tz2 = t.y + (pdz / pd) * tSp;
+    } else {
+      continue;
+    }
+    if (!collideAny(tx2, t.y, t.r)) t.x = tx2; else if (!collideAny(t.x, tz2, t.r)) t.y = tz2;
+    t.x = clamp(t.x, 30, 870); t.y = clamp(t.y, 30, 570);
+    t.step += dt * 10;
+    if (t.group) {
+      t.group.position.set(t.x, 0, t.y);
+      t.group.rotation.y = Math.atan2(dx, dz);
+      const legs = t.group.userData.legs || [];
+      legs.forEach((leg, i) => { leg.rotation.x = Math.sin(t.step + i * Math.PI) * 0.55; });
+    }
   }
+  const t = nearT || teacherState, dist = nearDist, ux = dist ? (cam.x - t.x) / dist : 0, uz = dist ? (cam.y - t.y) / dist : 0;
 
   /* монеты */
   for (let i = coinList.length - 1; i >= 0; i--) {
@@ -1634,9 +1806,28 @@ const dd = Math.hypot(c.x - cam.x, c.y - cam.y);
       saveWallet();
       comboN++; comboTimer = 130;
       combo = 1 + Math.min(2, Math.floor(comboN / 5) * 0.5);
-      if (c.mesh) { worldGroup.remove(c.mesh); disposeObj(c.mesh); }
+if (c.mesh) { worldGroup.remove(c.mesh); disposeObj(c.mesh); }
       coinList.splice(i, 1);
       updateHUD();
+    }
+  }
+
+  /* задания: подсветка ближайшей стойки */
+  if (map && map.tasks) {
+    let near = null, nearD = 1e9;
+    for (const tk of map.tasks) {
+      const tkd = Math.hypot(tk.x - cam.x, tk.y - cam.y);
+      if (tkd < nearD) { nearD = tkd; near = tk; }
+    }
+    nearTask = nearD < 80 ? near : null;
+    const hb = document.getElementById('hintBar');
+    if (nearTask) {
+      hb.classList.remove('hidden');
+      hb.textContent = nearTask.done
+        ? nearTask.emoji + ' ' + nearTask.name + ' ✅ (задание выполнено)'
+        : '📋 ' + nearTask.name + ' · Нажми E, чтобы выполнить';
+    } else {
+      hb.classList.add('hidden');
     }
   }
 
@@ -1863,7 +2054,7 @@ function render2D() {
   // усиления
   for (const p of pwList) items.push({ kind: 'pw', x: p.x, y: p.y, col: '#' + p.color.toString(16).padStart(6, '0') });
   // персонажи
-  if (teacherState) items.push({ kind: 'man', x: teacherState.x, y: teacherState.y, col: '#' + (teacherState.color >>> 0).toString(16).padStart(6, '0'), big: 1, step: teacherState.step });
+  for (const tch of teachersList) items.push({ kind: 'man', x: tch.x, y: tch.y, col: '#' + (tch.color >>> 0).toString(16).padStart(6, '0'), big: 1, step: tch.step });
   if (bossState && bossState.alive) items.push({ kind: 'man', x: bossState.x, y: bossState.y, col: '#8e1b2f', big: 1.55, crown: true, step: elapsed * 8 });
   for (const m of minionList) items.push({ kind: 'man', x: m.x, y: m.y, col: '#7a3fe0', big: 0.85, step: m.step });
   // снаряды
@@ -2105,10 +2296,14 @@ function drawGun2D(g, W, H) {
   }
 }
 /* ---------- цикл ---------- */
+let framePrev = 0;
 function frame() {
   requestAnimationFrame(frame);
-  if (!renderer) return;
-  const dt = Math.min(clock.getDelta(), 0.05);
+  if (!ctx2d && !renderer) return;
+  const nowMs = (performance && performance.now ? performance.now() : Date.now());
+  const raw = framePrev ? (nowMs - framePrev) / 1000 : 0.016;
+  framePrev = nowMs;
+  const dt = Math.min(clock ? Math.max(0.001, clock.getDelta()) : Math.max(0.001, raw), 0.05);
   if (state === 'playing') update(dt);
 
   // тряска камеры при ударе
