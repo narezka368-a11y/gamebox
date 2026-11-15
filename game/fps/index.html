@@ -124,6 +124,48 @@
   .shop-grid .card .d{min-height:30px}
   .shop-grid .card[onclick]{cursor:pointer}
 
+  /* ---------- стартовый экран / авторизация ---------- */
+  #menu{background:linear-gradient(180deg, rgba(9,5,24,.35), rgba(9,5,24,.62));
+    -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+  .menuCard{width:100%;max-width:460px;display:flex;flex-direction:column;align-items:center;
+    padding:18px 16px 14px;border-radius:20px;
+    background:rgba(20,12,42,.42);border:1.5px solid rgba(150,110,255,.34);
+    box-shadow:0 18px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07)}
+  .authPanel{width:100%;max-width:340px;display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .authTitle{color:#cbb8ff;font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.85}
+  .authPanel input{width:100%;background:rgba(0,0,0,.42);border:1.5px solid rgba(150,110,255,.45);
+    border-radius:11px;color:#fff;padding:11px 13px;font-family:inherit;font-size:15px;outline:none}
+  .authPanel input:focus{border-color:rgba(255,217,61,.8)}
+  .authMsg{min-height:18px;font-size:12.5px;font-weight:bold;color:#ff8a8a;text-align:center}
+  .whoami{color:#cbb8ff;font-size:14px;margin:10px 0 2px;text-align:center}
+  .whoami b{color:#ffd93d}
+  .linkbtn{background:none;border:0;color:#9c8fd0;text-decoration:underline;cursor:pointer;
+    font-family:inherit;font-size:12.5px;margin-left:6px}
+  .linkbtn:active{opacity:.6}
+
+  /* ---------- экраны настроек/персонажа/инвентаря ---------- */
+  .panelCard{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .setRow{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;
+    padding:11px 15px;border-radius:13px;background:rgba(30,20,58,.62);
+    border:1.5px solid rgba(140,100,255,.36);font-weight:bold;font-size:14px}
+  .switch{position:relative;width:50px;height:27px;border-radius:14px;background:#3a2a60;
+    border:2px solid rgba(255,255,255,.18);cursor:pointer;transition:background .2s;flex-shrink:0}
+  .switch::after{content:'';position:absolute;top:1px;left:2px;width:20px;height:20px;border-radius:50%;
+    background:#8b83aa;transition:transform .2s, background .2s}
+  .switch.on{background:linear-gradient(180deg,#4ade80,#16a34a)}
+  .switch.on::after{transform:translateX(23px);background:#fff}
+  .swatches{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px}
+  .swatch{width:34px;height:34px;border-radius:50%;border:2.5px solid rgba(255,255,255,.25);cursor:pointer}
+  .swatch.on{border-color:#ffd93d;box-shadow:0 0 14px rgba(255,217,61,.75)}
+  .invGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;
+    width:100%;max-width:520px;margin-top:6px}
+  .invSlot{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;
+    border-radius:13px;background:rgba(30,20,58,.7);border:1.5px solid rgba(140,100,255,.35);
+    font-size:11.5px;color:#d9cdff;text-align:center;min-height:88px;justify-content:center}
+  .invSlot .ie{font-size:26px}
+  .invSlot .ic{color:#ffd93d;font-weight:bold}
+  .invEmpty{color:#8f83c4;font-size:13px;margin-top:10px}
+
 </style>
 </head>
 <body>
@@ -160,38 +202,78 @@
 <div id="lookPad"></div>
 
 <div id="menu" class="screen">
-  <h1>УБЕГИ ОТ УЧИТЕЛЯ</h1>
-  <div class="sub">3D · вид от первого лица</div>
-  <p style="color:#cbb8ff;max-width:520px;font-size:14px;line-height:1.5">
-    Настоящий 3D: объёмные модели, свет и тени. Собери монеты, не дай учителю подойти
-    и оторвись от него — дистанция внизу экрана.
-  </p>
-  <div class="nameRow">
-    <label>Имя: <input id="playerName" maxlength="14" placeholder="Школьник" value=""></label>
-    <label>Скин пушки:
-      <select id="skinPick">
-        <option value="0">Дерево</option>
-        <option value="1">Сталь</option>
-        <option value="2">Неон</option>
-        <option value="3">Золото</option>
-      </select>
-    </label>
-    <label class="chk"><input type="checkbox" id="bossMode"> Режим с боссом</label>
-    <label class="chk"><input type="checkbox" id="liteMode"> Лёгкий режим</label>
+  <div class="menuCard">
+    <h1>УБЕГИ ОТ УЧИТЕЛЯ</h1>
+    <div class="sub">ШКОЛА · 3D</div>
+
+    <div id="authPanel" class="authPanel">
+      <div class="authTitle">Вход или регистрация</div>
+      <input id="authNick" maxlength="16" placeholder="Ник" autocomplete="off" spellcheck="false">
+      <input id="authPass" type="password" maxlength="32" placeholder="Пароль">
+      <div class="btns" style="margin-top:10px;margin-bottom:0">
+        <button class="btn green" onclick="doLogin()">Войти</button>
+        <button class="btn ghost" onclick="doRegister()">Регистрация</button>
+      </div>
+      <div id="authMsg" class="authMsg"></div>
+    </div>
+
+    <div id="mainPanel" class="hidden">
+      <div class="whoami">👤 <b id="whoNick"></b> · 💰 <b id="coinBoxMenu">0</b>
+        <button class="linkbtn" onclick="doLogout()">Выйти</button>
+      </div>
+      <div class="btns">
+        <button class="btn green" onclick="startGame()">🌍 Создать мир</button>
+        <button class="btn ghost" onclick="openSettings()">⚙️ Настройки</button>
+        <button class="btn ghost" onclick="openCustomize()">🧑 Настроить персонажа</button>
+      </div>
+    </div>
+
+    <div id="diag"></div>
   </div>
-  <div style="margin-top:8px;color:#ffd93d;font-weight:bold;font-size:13px">Выбери учителя</div>
-  <div class="grid" id="teacherGrid"></div>
-  <div style="margin-top:14px;color:#ffd93d;font-weight:bold;font-size:13px">Выбери карту</div>
-  <div class="grid" id="mapGrid" style="max-width:440px"></div>
-<div id="diag" style="margin-top:10px;color:#8f83c4;font-size:11.5px;max-width:560px;line-height:1.5"></div>
-  <div style="margin-top:10px;color:#ffd93d;font-weight:bold;font-size:15px" id="coinBoxMenu">💰 0</div>
-  <div class="btns">
-    <button class="btn green" onclick="startGame()">▶ Начать</button>
-    <button class="btn ghost" onclick="toggleFullscreen()">⛶ Полный экран</button>
-    <button class="btn ghost" onclick="openShop()">🛒 Магазин</button>
+</div>
+
+<div id="settings" class="screen hidden">
+  <div class="panelCard">
+    <h1 style="font-size:clamp(20px,4vw,30px)">⚙️ НАСТРОЙКИ</h1>
+    <div class="setRow"><span>🔊 Звук</span><div class="switch on" id="swSound" onclick="toggleSet('sound',this)"></div></div>
+    <div class="setRow"><span>📳 Тряска экрана</span><div class="switch on" id="swShake" onclick="toggleSet('shake',this)"></div></div>
+    <div class="setRow"><span>✨ Эффекты</span><div class="switch on" id="swFx" onclick="toggleSet('fx',this)"></div></div>
+    <div class="setRow"><span>🪶 Лёгкий режим</span><div class="switch" id="swLite" onclick="toggleSet('lite',this)"></div></div>
+    <div class="btns">
+      <button class="btn ghost" onclick="openShop()">🛒 Магазин</button>
+      <button class="btn green" onclick="closeSettings()">▶ Готово</button>
+    </div>
   </div>
-  <div class="note">WASD / стрелки — идти · мышь — смотреть и стрелять · Пробел — прыжок · Shift — рывок · R — перезарядка · Esc — пауза.<br>
-    На телефоне: джойстик — идти, свайп справа — смотреть. Монеты копятся и тратятся в магазине.</div>
+</div>
+
+<div id="customize" class="screen hidden">
+  <div class="panelCard">
+    <h1 style="font-size:clamp(20px,4vw,30px)">🧑 ПЕРСОНАЖ</h1>
+    <canvas id="charPreview" width="240" height="280"
+      style="border-radius:16px;background:radial-gradient(circle at 50% 30%, rgba(90,60,160,.55), rgba(12,8,26,.9));
+      border:1.5px solid rgba(150,110,255,.4)"></canvas>
+    <div class="sectionTitle" style="color:#ffd93d;font-size:12px;letter-spacing:2px;margin-top:8px">КОЖА</div>
+    <div class="swatches" id="swSkin"></div>
+    <div class="sectionTitle" style="color:#ffd93d;font-size:12px;letter-spacing:2px;margin-top:8px">ВОЛОСЫ</div>
+    <div class="swatches" id="swHair"></div>
+    <div class="sectionTitle" style="color:#ffd93d;font-size:12px;letter-spacing:2px;margin-top:8px">ОДЕЖДА</div>
+    <div class="swatches" id="swCloth"></div>
+    <div class="setRow" style="margin-top:10px"><span>🎩 Кепка</span><div class="switch" id="swHat" onclick="toggleHat(this)"></div></div>
+    <div class="btns">
+      <button class="btn green" onclick="closeCustomize()">▶ Готово</button>
+    </div>
+  </div>
+</div>
+
+<div id="inventory" class="screen hidden">
+  <div class="panelCard">
+    <h1 style="font-size:clamp(20px,4vw,30px)">🎒 ИНВЕНТАРЬ</h1>
+    <div id="invGrid" class="invGrid"></div>
+    <div class="invEmpty" id="invEmpty">Пока пусто — собирай предметы в школе</div>
+    <div class="btns">
+      <button class="btn green" onclick="closeInventory()">▶ Закрыть</button>
+    </div>
+  </div>
 </div>
 
 <div id="shop" class="screen hidden">
@@ -239,6 +321,8 @@
   <h1 style="font-size:clamp(20px,4vw,30px)">ПАУЗА</h1>
   <div class="btns">
     <button class="btn green" onclick="resumeGame()">▶ Продолжить</button>
+    <button class="btn ghost" onclick="openInventory()">🎒 Инвентарь</button>
+    <button class="btn ghost" onclick="openShop()">🛒 Магазин</button>
     <button class="btn ghost" onclick="backToMenu()">🏠 В меню</button>
   </div>
 </div>
@@ -274,7 +358,7 @@ const teachers = {
 
 /* ---------- генератор школы ---------- */
 function buildSchoolMap() {
-  const T = 16, obs = [], tasks = [], rooms = [];
+  const T = 16, obs = [], tasks = [], rooms = [], decor = [];
   function wall(x, y, w, h) { obs.push({ x, y, w, h, type: 'wall' }); }
   const roomCols = [[16, 224], [224, 448], [448, 672], [672, 884]];
   const corY0 = 252, corY1 = 344;              // коридор по центру: y 252..344, высота прохода 92
@@ -323,6 +407,24 @@ function buildSchoolMap() {
       rooms.push({ id: roomId, name: def.name, emoji: def.emoji, x: a, y: top, w: b - a, h: corY0 - roomTop });
       tasks.push({ id: 'task_' + roomId, name: def.name, emoji: def.emoji, q: def.q,
         opts: def.opts, ans: def.ans, x: cx, y: taskCy, done: false });
+      // доска на внешней стене кабинета + окно
+      if (side === 'n') {
+        decor.push({ kind: 'blackboard', x: cx, y: top + 14, w: Math.min(150, rgap - 90), rot: 0 });
+        decor.push({ kind: 'window', x: a + 42, y: top + 12, w: 58, rot: 0 });
+      } else {
+        decor.push({ kind: 'blackboard', x: cx, y: roomBot - 14, w: Math.min(150, rgap - 90), rot: Math.PI });
+        decor.push({ kind: 'window', x: b - 42, y: roomBot - 12, w: 58, rot: Math.PI });
+      }
+    }
+  }
+  // шкафчики вдоль стен коридора
+  const lockerCols = [0x3a6ea5, 0xd05a5a, 0x4caf7d, 0xd9a227];
+  let li = 0;
+  for (const [a, b] of roomCols) {
+    for (const lx of [a + 34, a + 66]) {
+      decor.push({ kind: 'locker', x: lx, y: 252, rot: 0, color: lockerCols[li % lockerCols.length] });
+      decor.push({ kind: 'locker', x: lx, y: 360, rot: Math.PI, color: lockerCols[(li + 2) % lockerCols.length] });
+      li++;
     }
   }
   // учителя-патрульные по коридору
@@ -339,6 +441,7 @@ function buildSchoolMap() {
     obstacles: obs,
     rooms,
     tasks,
+    decor,
     teachers: teachersArr
   };
 }
@@ -483,6 +586,7 @@ const player = { r: 16, speed: 3.6, hp: 100, invuln: 0, dashT: 0, dashCd: 0, das
 let teacherState = null;
 let teachersList = [];
 let coinList = [], pwList = [], particleMeshes = [];
+let itemList = [];
 let coins = 0, combo = 1, comboN = 0, comboTimer = 0;
 let activePw = { shield: 0, magnet: 0, x2: 0 };
 let keys = {}, moveInput = { x: 0, y: 0 };
@@ -644,6 +748,17 @@ function makeCharacter(color, opts = {}) {
   body.position.y = 40; body.castShadow = true;
   g.add(body);
 
+  // галстук и воротник учителя
+  if (opts.tie) {
+    const tie = new THREE.Mesh(new THREE.BoxGeometry(4, 20, 2), mat(opts.tie, .6));
+    tie.position.set(0, 42, 11.6); g.add(tie);
+    const knot = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 3), mat(opts.tie, .6));
+    knot.position.set(0, 53, 11.4); g.add(knot);
+    const collar = new THREE.Mesh(new THREE.BoxGeometry(13, 3, 4), mat(0xffffff, .5));
+    collar.position.set(0, 54, 9.6); g.add(collar);
+  }
+
+
   for (const s of [-1, 1]) {
     const arm = new THREE.Mesh(new THREE.CapsuleGeometry(4.4, 18, 4, 10), cloth);
     arm.position.set(s * 15, 42, 0);
@@ -676,6 +791,18 @@ function makeCharacter(color, opts = {}) {
       brow.rotation.z = s * 0.35;
       g.add(brow);
     }
+  }
+
+  if (opts.glasses) {
+    const gm = mat(0x232028, .4, .4);
+    for (const s of [-1, 1]) {
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(4.2, .8, 6, 14), gm);
+      rim.position.set(s * 4.6, 67, 11.4); g.add(rim);
+    }
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 1.2), gm);
+    bridge.position.set(0, 67, 11.4); g.add(bridge);
+    const temple = new THREE.Mesh(new THREE.BoxGeometry(20, 1.2, 1.2), gm);
+    temple.position.set(0, 68.5, 8.5); g.add(temple);
   }
 
   if (opts.crown) {
@@ -712,6 +839,86 @@ function makePowerMesh(color) {
   return pw;
 }
 
+/* ---------- мебель и декор ---------- */
+function makeDeskModel(w, d) {
+  const g = new THREE.Group();
+  const wood = mat(0xb07a45, .55);
+  const woodDark = mat(0x8a5a30, .6);
+  const metal = mat(0x4a4a52, .55, .55);
+  const top = new THREE.Mesh(new THREE.BoxGeometry(w, 5, d), wood);
+  top.position.y = 46; top.castShadow = true; top.receiveShadow = true; g.add(top);
+  const edge = new THREE.Mesh(new THREE.BoxGeometry(w, 4, d + 2), woodDark);
+  edge.position.y = 43.5; g.add(edge);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 44, 8), metal);
+    leg.position.set(sx * (w / 2 - 6), 22, sz * (d / 2 - 5));
+    leg.castShadow = true; g.add(leg);
+  }
+  const book = new THREE.Mesh(new THREE.BoxGeometry(Math.max(14, w * .4), 1.8, Math.max(10, d * .6)), mat(0xd64a4a, .7));
+  book.position.set(-w * .12, 49.6, 0); g.add(book);
+  const pen = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10, 6), mat(0x2b2f38, .5));
+  pen.rotation.z = Math.PI / 2; pen.position.set(w * .18, 49, d * .1); g.add(pen);
+  return g;
+}
+
+function makeChairModel(color) {
+  const g = new THREE.Group();
+  const seatMat = mat(color || 0x3a6ea5, .6);
+  const metal = mat(0x4a4a52, .55, .5);
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(22, 4, 22), seatMat);
+  seat.position.y = 26; seat.castShadow = true; g.add(seat);
+  const back = new THREE.Mesh(new THREE.BoxGeometry(22, 22, 4), seatMat);
+  back.position.set(0, 38, -9); back.castShadow = true; g.add(back);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 26, 6), metal);
+    leg.position.set(sx * 8, 13, sz * 8); g.add(leg);
+  }
+  return g;
+}
+
+function makeBlackboard(w) {
+  const g = new THREE.Group();
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(w, 66, 5), mat(0x7a5230, .7));
+  g.add(frame);
+  const board = new THREE.Mesh(new THREE.BoxGeometry(w - 10, 56, 6),
+    new THREE.MeshStandardMaterial({ color: 0x224a38, roughness: .92 }));
+  board.position.z = 1.5; g.add(board);
+  const tray = new THREE.Mesh(new THREE.BoxGeometry(w - 6, 3, 11), mat(0x8a6a4a, .7));
+  tray.position.set(0, -36, 4); g.add(tray);
+  const chalk = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 8, 6), mat(0xf2f2ea, .95));
+  chalk.rotation.z = Math.PI / 2; chalk.position.set(-w * .22, -33, 6); g.add(chalk);
+  return g;
+}
+
+function makeLockerModel(color) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(28, 112, 34), mat(0x9aa4b2, .45, .7));
+  body.position.y = 56; body.castShadow = true; body.receiveShadow = true; g.add(body);
+  const door = new THREE.Mesh(new THREE.BoxGeometry(24, 98, 2), mat(color, .45, .5));
+  door.position.set(0, 58, 18); g.add(door);
+  const handle = new THREE.Mesh(new THREE.BoxGeometry(3, 11, 2.5), mat(0x2b2f38, .35, .85));
+  handle.position.set(8, 58, 19.6); g.add(handle);
+  const vent = new THREE.Mesh(new THREE.BoxGeometry(14, 3, 1.2), mat(0x4a4a52, .6));
+  vent.position.set(0, 96, 19.3); g.add(vent);
+  return g;
+}
+
+function makeWindowModel(w) {
+  const g = new THREE.Group();
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(w, 74, 4), mat(0xe8eef7, .6));
+  g.add(frame);
+  const glass = new THREE.Mesh(new THREE.BoxGeometry(w - 8, 64, 4),
+    new THREE.MeshStandardMaterial({ color: 0x8fd3ff, roughness: .15, metalness: .2,
+      emissive: 0x8fd3ff, emissiveIntensity: .25, transparent: true, opacity: .85 }));
+  glass.position.z = 1; g.add(glass);
+  const barV = new THREE.Mesh(new THREE.BoxGeometry(3, 64, 5), mat(0xe8eef7, .6));
+  g.add(barV);
+  const barH = new THREE.Mesh(new THREE.BoxGeometry(w - 8, 3, 5), mat(0xe8eef7, .6));
+  g.add(barH);
+  return g;
+}
+
+
 /* ---------- оружие от первого лица ---------- */
 const SKINS = [
   { name: 'Дерево', wood: 0x8a4b2a, metal: 0x2b2f38, glow: 0x000000 },
@@ -745,6 +952,7 @@ function loadWallet() {
 }
 function saveWallet() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({ wallet, upgrade })); } catch (e) {}
+  if (typeof saveProfile === 'function') saveProfile();
 }
 function tryBuy(kind) {
   const base = UPGRADE_COST[kind];
@@ -842,7 +1050,7 @@ muzzle = new THREE.Mesh(
   g.add(muzzle);
 
   // руки, держащие оружие — слева и справа от него
-  const ARM_MAT = { skin: gunMat(0xe8b48c, .75, 0), sleeve: gunMat(0x8a6a3a, .8, 0) };
+  const ARM_MAT = { skin: gunMat((appearance && appearance.skin) || 0xf0c9a4, .75, 0), sleeve: gunMat((appearance && appearance.cloth) || 0x5b8dee, .8, 0) };
   function addHand(side) {
     const hand = new THREE.Group();
     const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(.055, .075, .34, 10), ARM_MAT.sleeve);
@@ -1077,7 +1285,7 @@ function buildLevel() {
     worldGroup = new THREE.Group();
     scene.add(worldGroup);
   }
-  coinList = []; pwList = [];
+  coinList = []; pwList = []; itemList = [];
 
   if (!USE_CANVAS) {
     const floor = new THREE.Mesh(
@@ -1195,6 +1403,16 @@ const ceilColor = map.night ? 0x0a0d20 : 0x151a26;
           col.position.set(o.x, 65, o.y); col.castShadow = true; col.receiveShadow = true;
           worldGroup.add(col);
         }
+      } else if (o.type === 'desk') {
+        // деревянная парта + цветной стул
+        const desk = makeDeskModel(o.w, o.h);
+        desk.position.set(o.x + o.w / 2, 0, o.y + o.h / 2);
+        worldGroup.add(desk);
+        const chairCols = [0x3a6ea5, 0x4caf7d, 0xd05a5a, 0xb06ddb];
+        const chair = makeChairModel(chairCols[(Math.abs(o.x) + Math.abs(o.y)) % chairCols.length | 0]);
+        chair.position.set(o.x + o.w / 2, 0, o.y + o.h + 16);
+        chair.rotation.y = Math.PI;
+        worldGroup.add(chair);
       } else {
         const isWall = o.type === 'wall';
         const isShelf = o.type === 'shelf';
@@ -1204,7 +1422,15 @@ const ceilColor = map.night ? 0x0a0d20 : 0x151a26;
         box.position.set(o.x + o.w / 2, h / 2, o.y + o.h / 2);
         box.castShadow = true; box.receiveShadow = true;
         worldGroup.add(box);
-        if (isShelf) {
+        if (isWall) {
+          // плинтус и верхняя окантовка стены
+          const skirt = new THREE.Mesh(new THREE.BoxGeometry(o.w + 2, 12, o.h + 2), mat(0x3b2f22, .9));
+          skirt.position.set(o.x + o.w / 2, 6, o.y + o.h / 2);
+          worldGroup.add(skirt);
+          const crown = new THREE.Mesh(new THREE.BoxGeometry(o.w + 2, 5, o.h + 2), mat(0xe8eef7, .7));
+          crown.position.set(o.x + o.w / 2, 128, o.y + o.h / 2);
+          worldGroup.add(crown);
+        } else if (isShelf) {
           for (let i = 1; i < 4; i++) {
             const plank = new THREE.Mesh(new THREE.BoxGeometry(o.w + 2, 2, o.h + 2), mat(0x8a6a4a, .7));
             plank.position.set(o.x + o.w / 2, i * 30, o.y + o.h / 2);
@@ -1220,6 +1446,19 @@ const ceilColor = map.night ? 0x0a0d20 : 0x151a26;
           const top = new THREE.Mesh(new THREE.BoxGeometry(o.w * .94, 3, o.h * .9), mat(0xc79a6a, .7));
           top.position.set(o.x + o.w / 2, h + 1.5, o.y + o.h / 2);
           worldGroup.add(top);
+        }
+      }
+    }
+
+    // декор кабинетов: доски, окна, шкафчики
+    if (map.decor) {
+      for (const d of map.decor) {
+        if (d.kind === 'blackboard') {
+          const bb = makeBlackboard(d.w); bb.position.set(d.x, 96, d.y); bb.rotation.y = d.rot || 0; worldGroup.add(bb);
+        } else if (d.kind === 'window') {
+          const wd = makeWindowModel(d.w); wd.position.set(d.x, 100, d.y); wd.rotation.y = d.rot || 0; worldGroup.add(wd);
+        } else if (d.kind === 'locker') {
+          const lk = makeLockerModel(d.color || 0x3a6ea5); lk.position.set(d.x, 0, d.y); lk.rotation.y = d.rot || 0; worldGroup.add(lk);
         }
       }
     }
@@ -1292,7 +1531,26 @@ const ceilColor = map.night ? 0x0a0d20 : 0x151a26;
     pwList.push({ mesh, x: px, y: py, kind: p.kind, color: p.color });
   }
 
-const t = teachers[selectedTeacher];
+  for (let i = 0; i < 6; i++) {
+    const ids = Object.keys(ITEM_DEFS);
+    const id = ids[Math.floor(Math.random() * ids.length)];
+    let ix = 0, iy = 0, ok = false;
+    for (let k = 0; k < 80 && !ok; k++) {
+      ix = 60 + Math.random() * 780; iy = 70 + Math.random() * 460;
+      ok = !collideAny(ix, iy, 24) && Math.hypot(ix - cam.x, iy - cam.y) > 120;
+    }
+    let mesh = null;
+    if (!USE_CANVAS) {
+      const mm = new THREE.MeshStandardMaterial({ color: 0xffd93d, metalness: .5, roughness: .35, emissive: 0xffd93d, emissiveIntensity: .45 });
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(12, 12, 4), mm);
+      mesh.position.set(ix, 26, iy);
+      mesh.castShadow = true;
+      worldGroup.add(mesh);
+    }
+    itemList.push({ mesh, x: ix, y: iy, id, phase: Math.random() * TAU });
+  }
+
+  const t = teachers[selectedTeacher];
   // несколько учителей-патрульных (для школы — из map.teachers, иначе один)
   const patrolDefs = (map.teachers && map.teachers.length ? map.teachers : [{ x: map.teacher.x, y: map.teacher.y, patrol: null, speed: t.speed }]);
   teachersList = [];
@@ -1300,7 +1558,12 @@ const t = teachers[selectedTeacher];
   patrolDefs.forEach((pd, i) => {
     let g = null;
     if (!USE_CANVAS) {
-      g = makeCharacter(cols[i % cols.length], { angry: true, hair: 0x2a2030 });
+      g = makeCharacter(cols[i % cols.length], {
+        angry: true,
+        hair: [0x2a2030, 0x4a2a1a, 0x9a7a2a, 0x6a6a6a][i % 4],
+        tie: [0xc0323c, 0x2b5ea8, 0x2f7a4a, 0x8a3aa0][i % 4],
+        glasses: i % 2 === 1
+      });
       g.position.set(pd.x, 0, pd.y);
       worldGroup.add(g);
     }
@@ -1383,6 +1646,7 @@ if (k === 'shift' || k === 'q') tryDash();
   if (k === ' ') shootOnce();
   if (k === 'r') startReload();
   if (k === 'e' || k === 'у') tryInteractTask();
+  if (k === 'i' || k === 'ш') { if (state === 'inventory') closeInventory(); else if (state === 'playing') openInventory(); }
   if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
 });
 addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
@@ -1511,69 +1775,221 @@ const pwTypes = [
   { kind: 'x2', color: 0x4ade80, dur: 600 }
 ];
 
-/* ---------- настройки игрока ---------- */
+/* ---------- аккаунты и профиль ---------- */
+const USERS_KEY = 'gb:fps:users';
+let users = {}, currentNick = null;
+let appearance = { skin: 0xf0c9a4, hair: 0x2b2233, cloth: 0x5b8dee, hat: false };
+let inventory = [];
+let settings = { sound: true, shake: true, fx: true };
+
+function hashPass(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return String(h >>> 0); }
+function loadUsers() { try { users = JSON.parse(localStorage.getItem(USERS_KEY) || '{}') || {}; } catch (e) { users = {}; } }
+function persistUsers() { try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch (e) {} }
+function defaultProfile() {
+  return { wallet: 0, upgrade: { speed: 0, damage: 0, hp: 0, mag: 0, fireRate: 0 },
+    appearance: { skin: 0xf0c9a4, hair: 0x2b2233, cloth: 0x5b8dee, hat: false }, inventory: [] };
+}
+function applyProfile(p) {
+  p = p || defaultProfile();
+  wallet = p.wallet || 0;
+  upgrade = Object.assign({ speed: 0, damage: 0, hp: 0, mag: 0, fireRate: 0 }, p.upgrade || {});
+  appearance = Object.assign({ skin: 0xf0c9a4, hair: 0x2b2233, cloth: 0x5b8dee, hat: false }, p.appearance || {});
+  inventory = Array.isArray(p.inventory) ? p.inventory : [];
+}
+function saveProfile() {
+  if (!currentNick || !users[currentNick]) return;
+  users[currentNick].save = { wallet, upgrade, appearance, inventory };
+  persistUsers();
+}
+
+function doRegister() {
+  const nick = document.getElementById('authNick').value.trim();
+  const pass = document.getElementById('authPass').value;
+  const msg = document.getElementById('authMsg');
+  if (nick.length < 3) { msg.textContent = 'Ник — минимум 3 символа'; return; }
+  if (pass.length < 3) { msg.textContent = 'Пароль — минимум 3 символа'; return; }
+  if (users[nick]) { msg.textContent = 'Такой ник уже занят'; return; }
+  users[nick] = { pass: hashPass(pass), save: defaultProfile() };
+  persistUsers();
+  msg.style.color = '#4ade80'; msg.textContent = 'Аккаунт создан! Входим…';
+  setTimeout(() => enterAs(nick), 400);
+}
+function doLogin() {
+  const nick = document.getElementById('authNick').value.trim();
+  const pass = document.getElementById('authPass').value;
+  const msg = document.getElementById('authMsg');
+  if (!users[nick]) { msg.textContent = 'Нет такого ника — зарегистрируйся'; return; }
+  if (users[nick].pass !== hashPass(pass)) { msg.textContent = 'Неверный пароль'; return; }
+  enterAs(nick);
+}
+function enterAs(nick) {
+  currentNick = nick;
+  applyProfile(users[nick].save);
+  playerName = nick;
+  document.getElementById('authMsg').textContent = '';
+  document.getElementById('authPass').value = '';
+  refreshAuthUI();
+  updateShopUI();
+}
+function doLogout() {
+  saveProfile();
+  currentNick = null;
+  refreshAuthUI();
+}
+function refreshAuthUI() {
+  const auth = document.getElementById('authPanel');
+  const main = document.getElementById('mainPanel');
+  if (!auth || !main) return;
+  if (currentNick) {
+    auth.classList.add('hidden');
+    main.classList.remove('hidden');
+    document.getElementById('whoNick').textContent = currentNick;
+    const cb = document.getElementById('coinBoxMenu');
+    if (cb) cb.textContent = wallet;
+  } else {
+    auth.classList.remove('hidden');
+    main.classList.add('hidden');
+  }
+}
+
+/* ---------- звук ---------- */
+const Sfx = (() => {
+  let ac = null;
+  function ensure() { if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ac = null; } } if (ac && ac.state === 'suspended') { try { ac.resume(); } catch (e) {} } return ac; }
+  function tone(f1, f2, dur, type, vol) {
+    if (!settings.sound) return; const c = ensure(); if (!c) return;
+    try { const o = c.createOscillator(), g = c.createGain(); o.type = type || 'sine';
+      o.frequency.setValueAtTime(f1, c.currentTime); if (f2 && f2 !== f1) o.frequency.exponentialRampToValueAtTime(Math.max(30, f2), c.currentTime + dur);
+      g.gain.setValueAtTime(0.0001, c.currentTime); g.gain.linearRampToValueAtTime(vol || 0.1, c.currentTime + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+      o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + dur + 0.03);
+    } catch (e) {}
+  }
+  return { unlock() { ensure(); }, coin() { tone(880, 1320, 0.09, 'triangle', 0.08); }, hit() { tone(190, 60, 0.24, 'sawtooth', 0.1); } };
+})();
+
+/* ---------- настройки ---------- */
 function loadPrefs() {
   try {
-    const n = localStorage.getItem('gb:fps:name');
-    if (n) playerName = n;
-    const s = localStorage.getItem('gb:fps:skin');
-    if (s !== null) skinIndex = clamp(parseInt(s, 10) || 0, 0, SKINS.length - 1);
-    bossMode = localStorage.getItem('gb:fps:boss') === '1';
     liteMode = localStorage.getItem('gb:fps:lite') === '1' || /[?&]lite=1/.test(location.search);
+    const st = localStorage.getItem('gb:fps:settings');
+    if (st) settings = Object.assign(settings, JSON.parse(st) || {});
   } catch (e) {}
-  const nameEl = document.getElementById('playerName');
-  if (nameEl) nameEl.value = playerName;
-  const skinEl = document.getElementById('skinPick');
-  if (skinEl) skinEl.value = String(skinIndex);
-  const bossEl = document.getElementById('bossMode');
-  if (bossEl) bossEl.checked = bossMode;
+  syncSettingsUI();
 }
 function savePrefs() {
-  try {
-    localStorage.setItem('gb:fps:name', playerName);
-    localStorage.setItem('gb:fps:skin', String(skinIndex));
-    localStorage.setItem('gb:fps:boss', bossMode ? '1' : '0');
-    localStorage.setItem('gb:fps:lite', liteMode ? '1' : '0');
-  } catch (e) {}
+  try { localStorage.setItem('gb:fps:settings', JSON.stringify(settings)); localStorage.setItem('gb:fps:lite', liteMode ? '1' : '0'); } catch (e) {}
 }
-function bindPrefs() {
-  const nameEl = document.getElementById('playerName');
-  if (nameEl) nameEl.addEventListener('input', () => { playerName = nameEl.value.trim() || 'Школьник'; savePrefs(); });
-  const skinEl = document.getElementById('skinPick');
-  if (skinEl) skinEl.addEventListener('change', () => { skinIndex = parseInt(skinEl.value, 10) || 0; savePrefs(); });
-  const bossEl = document.getElementById('bossMode');
-  if (bossEl) bossEl.addEventListener('change', () => { bossMode = bossEl.checked; savePrefs(); });
+function bindPrefs() {}
+function syncSettingsUI() {
+  const m = { sound: 'swSound', shake: 'swShake', fx: 'swFx', lite: 'swLite' };
+  for (const k in m) { const el = document.getElementById(m[k]); if (el) el.classList.toggle('on', k === 'lite' ? liteMode : !!settings[k]); }
 }
+function toggleSet(k, el) {
+  if (k === 'lite') { liteMode = !liteMode; if (el) el.classList.toggle('on', liteMode); }
+  else { settings[k] = !settings[k]; if (el) el.classList.toggle('on', !!settings[k]); }
+  savePrefs();
+}
+
+/* ---------- персонаж ---------- */
+const SKIN_COLORS = [0xf0c9a4, 0xd9a066, 0xa8714a, 0x7a4a2a, 0xffe0c0];
+const HAIR_COLORS = [0x2b2233, 0x5a3a1a, 0xc9a227, 0xd94f4f, 0x2e7dd1, 0x8f8f8f];
+const CLOTH_COLORS = [0x5b8dee, 0x4caf7d, 0xe05555, 0xb06ddb, 0xff9a3d, 0x2b2f38];
+function hex(n) { return '#' + (n >>> 0).toString(16).padStart(6, '0'); }
+function buildSwatches() {
+  const mk = (hostId, colors, key) => {
+    const host = document.getElementById(hostId); if (!host) return;
+    host.innerHTML = colors.map(c => `<button class="swatch${appearance[key] === c ? ' on' : ''}" data-c="${c}" style="background:${hex(c)}"></button>`).join('');
+    host.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => {
+      appearance[key] = parseInt(b.dataset.c, 10);
+      host.querySelectorAll('.swatch').forEach(s => s.classList.toggle('on', s === b));
+      saveProfile(); drawCharPreview(); applyAppearance();
+    }));
+  };
+  mk('swSkin', SKIN_COLORS, 'skin'); mk('swHair', HAIR_COLORS, 'hair'); mk('swCloth', CLOTH_COLORS, 'cloth');
+  const hat = document.getElementById('swHat'); if (hat) hat.classList.toggle('on', !!appearance.hat);
+}
+function toggleHat(el) { appearance.hat = !appearance.hat; if (el) el.classList.toggle('on', appearance.hat); saveProfile(); drawCharPreview(); applyAppearance(); }
+function drawCharPreview() {
+  const c = document.getElementById('charPreview'); if (!c) return;
+  const g = c.getContext('2d'); const W = c.width, H = c.height;
+  g.clearRect(0, 0, W, H);
+  const cx = W / 2, baseY = H - 30;
+  const skin = hex(appearance.skin), cloth = hex(appearance.cloth), hair = hex(appearance.hair);
+  // ноги
+  g.fillStyle = '#2b2f38'; g.fillRect(cx - 26, baseY - 78, 20, 78); g.fillRect(cx + 6, baseY - 78, 20, 78);
+  // тело
+  g.fillStyle = cloth; g.beginPath();
+  (g.roundRect ? g.roundRect(cx - 40, baseY - 150, 80, 86, 18) : g.rect(cx - 40, baseY - 150, 80, 86)); g.fill();
+  // руки
+  g.fillStyle = skin; g.fillRect(cx - 58, baseY - 142, 16, 62); g.fillRect(cx + 42, baseY - 142, 16, 62);
+  // голова
+  g.fillStyle = skin; g.beginPath(); g.arc(cx, baseY - 176, 34, 0, Math.PI * 2); g.fill();
+  // волосы
+  g.fillStyle = hair; g.beginPath(); g.arc(cx, baseY - 182, 35, Math.PI, Math.PI * 2); g.fill();
+  // глаза
+  g.fillStyle = '#241b2c'; g.beginPath(); g.arc(cx - 12, baseY - 176, 4, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.arc(cx + 12, baseY - 176, 4, 0, Math.PI * 2); g.fill();
+  // кепка
+  if (appearance.hat) {
+    g.fillStyle = '#e05555'; g.beginPath(); g.arc(cx, baseY - 190, 35, Math.PI, Math.PI * 2); g.fill();
+    g.fillRect(cx - 36, baseY - 192, 40, 7);
+  }
+}
+function applyAppearance() {
+  // цвет рук/рукавов у оружия и при пересборке
+  if (typeof weapon !== 'undefined' && weapon) { buildWeapon(); }
+}
+function openCustomize() { state = 'customize'; show('customize'); buildSwatches(); drawCharPreview(); }
+function closeCustomize() { saveProfile(); state = 'menu'; show('menu'); refreshAuthUI(); }
+function openSettings() { state = 'settings'; show('settings'); syncSettingsUI(); }
+function closeSettings() { state = 'menu'; show('menu'); refreshAuthUI(); }
+
+/* ---------- инвентарь ---------- */
+const ITEM_DEFS = {
+  book: { emoji: '📘', name: 'Тетрадь' },
+  pen: { emoji: '🖊️', name: 'Ручка' },
+  ruler: { emoji: '📏', name: 'Линейка' },
+  apple: { emoji: '🍎', name: 'Яблоко' },
+  key: { emoji: '🔑', name: 'Ключ' },
+  note: { emoji: '📝', name: 'Записка' },
+  medal: { emoji: '🏅', name: 'Медаль' }
+};
+function addItem(id, n) {
+  const def = ITEM_DEFS[id] || { emoji: '📦', name: id };
+  const found = inventory.find(i => i.id === id);
+  if (found) found.count += (n || 1); else inventory.push({ id, emoji: def.emoji, name: def.name, count: n || 1 });
+  saveProfile();
+  if (Sfx && Sfx.coin) Sfx.coin();
+  flashPickup(def.emoji + ' ' + def.name);
+}
+function flashPickup(text) {
+  const hb = document.getElementById('hintBar');
+  if (!hb) return;
+  hb.classList.remove('hidden');
+  hb.textContent = '👜 ' + text;
+  clearTimeout(flashPickup._t);
+  flashPickup._t = setTimeout(() => { if (!nearTask) hb.classList.add('hidden'); }, 1600);
+}
+function renderInventory() {
+  const g = document.getElementById('invGrid'); if (!g) return;
+  const empty = document.getElementById('invEmpty');
+  if (!inventory.length) { g.innerHTML = ''; if (empty) empty.style.display = 'block'; return; }
+  if (empty) empty.style.display = 'none';
+  g.innerHTML = inventory.map(i => `<div class="invSlot"><div class="ie">${i.emoji}</div><div>${i.name}</div><div class="ic">×${i.count}</div></div>`).join('');
+}
+function openInventory() {
+  if (state === 'playing') pauseGame();
+  state = 'inventory'; show('inventory'); renderInventory();
+}
+function closeInventory() { state = 'menu'; show('menu'); refreshAuthUI(); }
 
 /* ---------- меню ---------- */
-function buildMenus() {
-  const tg = document.getElementById('teacherGrid');
-  tg.innerHTML = Object.entries(teachers).map(([k, t]) =>
-    `<button class="card${k === selectedTeacher ? ' on' : ''}" data-t="${k}">
-       <span class="e">${t.emoji}</span><span class="n">${t.name}</span>
-       <span class="d">скорость ${t.speed.toFixed(1)}</span>
-     </button>`).join('');
-
-  const mg = document.getElementById('mapGrid');
-  mg.innerHTML = Object.entries(maps).map(([k, m]) =>
-    `<button class="card${k === selectedMap ? ' on' : ''}" data-m="${k}">
-       <span class="e">${m.emoji}</span><span class="n">${m.name}</span>
-       <span class="d">${m.obstacles.length} объектов</span>
-     </button>`).join('');
-
-  tg.querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => {
-    selectedTeacher = b.dataset.t;
-    tg.querySelectorAll('.card').forEach(c => c.classList.toggle('on', c === b));
-  }));
-  mg.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
-    selectedMap = b.dataset.m;
-    mg.querySelectorAll('.card').forEach(c => c.classList.toggle('on', c === b));
-  }));
-}
+function buildMenus() { /* старое меню выбора карт/учителей удалено */ }
 
 /* ---------- экраны ---------- */
 function show(id) {
-  ['menu', 'pause', 'over', 'shop', 'taskModal'].forEach(k => document.getElementById(k).classList.add('hidden'));
+  ['menu', 'pause', 'over', 'shop', 'taskModal', 'settings', 'customize', 'inventory'].forEach(k => { const e = document.getElementById(k); if (e) e.classList.add('hidden'); });
   if (id) document.getElementById(id).classList.remove('hidden');
 }
 function openShop() {
@@ -1662,20 +2078,19 @@ function hideGameUI(hide) {
 }
 
 function startGame() {
+  if (!currentNick) {
+    const msg = document.getElementById('authMsg');
+    if (msg) { msg.style.color = '#ff8a8a'; msg.textContent = 'Сначала войди или зарегистрируйся'; }
+    return;
+  }
   if (!renderer && !ctx2d) initThree();
-  const nameEl = document.getElementById('playerName');
-  if (nameEl && nameEl.value.trim()) playerName = nameEl.value.trim();
-  const skinEl = document.getElementById('skinPick');
-  if (skinEl) skinIndex = parseInt(skinEl.value, 10) || 0;
-  const bossEl = document.getElementById('bossMode');
-  if (bossEl) bossMode = bossEl.checked;
-  savePrefs();
+  playerName = currentNick;
   playerDamage = 20 + upgrade.damage * 4;
   fireRateMs = Math.max(55, 95 - upgrade.fireRate * 6);
   refreshPlayerStats();
   ammo = magSize; reloading = false;
   buildLevel();
-  if (!USE_CANVAS && !weapon) buildWeapon();
+  if (!USE_CANVAS) buildWeapon();
   state = 'playing';
   show(null);
   hideGameUI(false);
@@ -1809,6 +2224,18 @@ const dd = Math.hypot(c.x - cam.x, c.y - cam.y);
 if (c.mesh) { worldGroup.remove(c.mesh); disposeObj(c.mesh); }
       coinList.splice(i, 1);
       updateHUD();
+    }
+  }
+
+  /* предметы в инвентарь */
+  for (let i = itemList.length - 1; i >= 0; i--) {
+    const it = itemList[i];
+    it.phase += dt * 2;
+    if (it.mesh) { it.mesh.rotation.y += dt * 1.8; it.mesh.position.y = 26 + Math.sin(it.phase) * 4; }
+    if (Math.hypot(it.x - cam.x, it.y - cam.y) < 34) {
+      addItem(it.id, 1);
+      if (it.mesh) { worldGroup.remove(it.mesh); disposeObj(it.mesh); }
+      itemList.splice(i, 1);
     }
   }
 
@@ -2034,11 +2461,24 @@ function render2D() {
   for (const o of map.obstacles) {
     if (o.r !== undefined) {
       items.push({ kind: o.type || 'column', x: o.x, y: o.y, r: o.r });
+    } else if (o.type === 'desk') {
+      items.push({ kind: 'box', x: o.x, y: o.y, w: o.w, h: o.h, hh: 46, col: '#b07a45' });
+      items.push({ kind: 'box', x: o.x + o.w / 2 - 11, y: o.y + o.h + 4, w: 22, h: 22, hh: 30, col: '#3a6ea5' });
     } else {
       const isWall = o.type === 'wall';
       const hh = isWall ? 130 : (o.type === 'crate' ? 56 : 46);
       const col = isWall ? '#b08a63' : (o.type === 'crate' ? '#a9764a' : '#8a5a30');
       items.push({ kind: 'box', x: o.x, y: o.y, w: o.w, h: o.h, hh, col });
+      if (isWall) items.push({ kind: 'box', x: o.x, y: o.y, w: o.w, h: 3, hh: 12, col: '#3b2f22' });
+    }
+  }
+
+  // декор: доски, окна, шкафчики
+  if (map.decor) {
+    for (const d of map.decor) {
+      if (d.kind === 'blackboard') items.push({ kind: 'box', x: d.x - d.w / 2, y: d.y, w: d.w, h: 5, hh: 128, col: '#224a38' });
+      else if (d.kind === 'window') items.push({ kind: 'box', x: d.x - d.w / 2, y: d.y, w: d.w, h: 5, hh: 132, col: '#8fd3ff' });
+      else if (d.kind === 'locker') items.push({ kind: 'box', x: d.x - 13, y: d.y - 8, w: 26, h: 16, hh: 112, col: '#' + ((d.color || 0x9aa4b2) >>> 0).toString(16).padStart(6, '0') });
     }
   }
 
@@ -2363,9 +2803,11 @@ function writeDiag() {
 
 loadPrefs();
 loadWallet();
+loadUsers();
 bindPrefs();
 buildMenus();
 updateShopUI();
+refreshAuthUI();
 
 try {
   if (!USE_CANVAS && !hasWebGL()) {
