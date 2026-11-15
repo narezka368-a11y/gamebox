@@ -19,7 +19,7 @@ const GAMES = [
     ios: 'game/',
     versions: [
       { label: 'Сверху · 3D', play: 'game/', apk: 'downloads/escape-teacher.apk' },
-      { label: '1-е лицо · 3D', play: 'game/fps/', apk: 'downloads/escape-fps.apk' },
+      { label: '1-е лицо · 3D', play: 'game/fps/', apk: 'downloads/escape-fps.apk', pc: 'downloads/escape-fps-pc.html' },
       { label: 'Классика · 2D', play: 'game/classic/', apk: 'downloads/escape-teacher-2d.apk' }
     ],
     isNew: false
@@ -83,6 +83,7 @@ function cardHTML(g) {
         <div class="card-actions">
           <a class="btn primary small" data-play href="${active.play}"><span class="ico">▶</span> Играть</a>
           ${active.apk ? `<a class="btn android small" data-apk href="${active.apk}" download><span class="ico">🤖</span> APK</a>` : '<a class="btn android small ghost hidden" data-apk href="#" aria-hidden="true"></a>'}
+          ${active.pc ? `<a class="btn ghost small" data-pc href="${active.pc}" download><span class="ico">💾</span> Скачать для ПК</a>` : '<a class="btn ghost small hidden" data-pc href="#" aria-hidden="true"></a>'}
           <button class="btn ios small" data-ios="1"><span class="ico">📱</span> iPhone</button>
         </div>
       </div>
@@ -142,6 +143,7 @@ document.addEventListener('click', e => {
       });
       const play = card.querySelector('[data-play]');
       const apk = card.querySelector('[data-apk]');
+      const pc = card.querySelector('[data-pc]');
       if (play) play.href = v.play;
       if (apk) {
         if (v.apk) {
@@ -150,6 +152,15 @@ document.addEventListener('click', e => {
           apk.innerHTML = '<span class="ico">🤖</span> APK';
         } else {
           apk.classList.add('hidden');
+        }
+      }
+      if (pc) {
+        if (v.pc) {
+          pc.href = v.pc;
+          pc.classList.remove('hidden');
+          pc.innerHTML = '<span class="ico">💾</span> Скачать для ПК';
+        } else {
+          pc.classList.add('hidden');
         }
       }
       try { localStorage.setItem('gb:ver:' + card.dataset.id, String(idx)); } catch (err) {}
